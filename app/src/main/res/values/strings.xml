@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name">ContentDelivery</string>
+    <string name="action_refresh">Osvježi</string>
+    <string name="error_message">Dogodila se greška prilikom dohvata podataka</string>
+    <string name="service_not_available">Geolokacijski servis je nedostupan</string>
+    <string name="invalid_lat_long_used">Lokacija nije dobrog formata</string>
+    <string name="no_address_found">Adresa nije pronađena</string>
+    <string name="address_found">Adresa je pronađena</string>
+    <string name="no_geocoder_available">Geocoder nije dostupan</string>
+</resources>
