@@ -20,9 +20,11 @@ public final class NetworkUtils {
 
     private static final String TAG = NetworkUtils.class.getSimpleName();
 
-    private static final String DEBUG_URL = "http://10.0.2.2/webapp/DohvatiSadrzaj/DohvatiSadrzaje";
+    private static final String AKCIJA_DOHVATI_ID = "https://webappcd.azurewebsites.net/DohvatiSadrzaj";
 
-    private static final String RELEASE_URL = "http://10.0.2.2/webapp/DohvatiSadrzaj/DohvatiSadrzaje";
+    private static final String DEBUG_URL = "https://webappcd.azurewebsites.net//DohvatiSadrzaj/DohvatiSadrzaje";
+
+    private static final String RELEASE_URL = "https://webappcd.azurewebsites.net/webapp/DohvatiSadrzaj/DohvatiSadrzaje";
 
     private static final String BASE_URL = DEBUG_URL;
 
@@ -32,13 +34,22 @@ public final class NetworkUtils {
     final static String LON_PARAM = "Longitude";
     final static String KAT_PARAM = "Kategorije";
     final static String TAG_PARAM = "Tagovi";
+    final static String ID_PARAM = "sadrzajID";
 
     public static URL buildUrl(QueryFilters filteri) {
         // COMPLETED (1) Fix this method to return the URL used to query Open Weather Map's API
-        Uri builtUri = Uri.parse(BASE_URL).buildUpon()
-                .appendQueryParameter(LAT_PARAM, (Double.toString((filteri.Latitude))))
-                .appendQueryParameter(LON_PARAM, (Double.toString((filteri.Longitude))))
-                .build();
+        Uri builtUri = null;
+
+        if(filteri.sadrzajID <= 0){
+            builtUri = Uri.parse(BASE_URL).buildUpon()
+                    .appendQueryParameter(LAT_PARAM, (Double.toString((filteri.Latitude))))
+                    .appendQueryParameter(LON_PARAM, (Double.toString((filteri.Longitude))))
+                    .build();
+        }else {
+            builtUri = Uri.parse(BASE_URL).buildUpon()
+                    .appendQueryParameter(ID_PARAM, (Integer.toString((filteri.sadrzajID))))
+                    .build();
+        }
 
         URL url = null;
         try {
@@ -51,6 +62,26 @@ public final class NetworkUtils {
         return url;
     }
 
+    public static Uri buildUri(int sadrzajID) {
+        // COMPLETED (1) Fix this method to return the URL used to query Open Weather Map's API
+        Uri builtUri = Uri.parse(AKCIJA_DOHVATI_ID).buildUpon()
+                    .appendQueryParameter(ID_PARAM, (Integer.toString((sadrzajID))))
+                    .build();
+
+        return builtUri;
+    }
+
+    public static URL buildUrl(Uri uri){
+        URL url = null;
+        try {
+            url = new URL(uri.toString());
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        }
+
+        Log.v(TAG, "Built URI " + url);
+        return url;
+    }
 
     /**
      * This method returns the entire result from the HTTP response.

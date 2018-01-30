@@ -11,6 +11,7 @@ public final class QueryFilters {
     public List<String> Tagovi;
     public double Latitude;
     public double Longitude;
-    public  String Town;
-    public  String Country;
+    public String Town;
+    public String Country;
+    public int sadrzajID;
 }

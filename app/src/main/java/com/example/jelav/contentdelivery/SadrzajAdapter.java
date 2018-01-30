@@ -1,6 +1,7 @@
 package com.example.jelav.contentdelivery;
 
 import android.content.Context;
+import android.database.Cursor;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,12 +18,11 @@ public class SadrzajAdapter extends RecyclerView.Adapter<SadrzajAdapter.SadrzajV
 
     final private ListItemClickListener mOnClickListener;
 
-    private SadrzajResponse mSadrzajResponse;
-
-
     public interface ListItemClickListener {
-        void onListItemClick(int clickedItemIndex);
+        void onListItemClick(Sadrzaj sadrzaj);
     }
+
+    private SadrzajResponse mSadrzajResponse;
 
     public SadrzajAdapter(ListItemClickListener listener){
         mOnClickListener = listener;
@@ -36,8 +36,9 @@ public class SadrzajAdapter extends RecyclerView.Adapter<SadrzajAdapter.SadrzajV
         boolean shouldAttachToParentImmediately = false;
 
         View view = inflater.inflate(layoutIdForListItem, viewGroup, shouldAttachToParentImmediately);
-        SadrzajViewHolder viewHolder = new SadrzajViewHolder(view);
+        view.setFocusable(true);
 
+        SadrzajViewHolder viewHolder = new SadrzajViewHolder(view);
         return viewHolder;
     }
 
@@ -88,7 +89,8 @@ public class SadrzajAdapter extends RecyclerView.Adapter<SadrzajAdapter.SadrzajV
         @Override
         public void onClick(View view) {
             int clickedPosition = getAdapterPosition();
-            mOnClickListener.onListItemClick(clickedPosition);
+            Sadrzaj sadrzaj = mSadrzajResponse.data.get(clickedPosition);
+            mOnClickListener.onListItemClick(sadrzaj);
         }
     }
 }
