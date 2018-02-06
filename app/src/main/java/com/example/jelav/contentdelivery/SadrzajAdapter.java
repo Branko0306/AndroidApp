@@ -6,7 +6,11 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.TextView;
+
+import org.w3c.dom.Text;
 
 /**W
  * Created by jelav on 29/12/2017.
@@ -66,30 +70,49 @@ public class SadrzajAdapter extends RecyclerView.Adapter<SadrzajAdapter.SadrzajV
 
     class SadrzajViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
-        // COMPLETED (13) Within NumberViewHolder, create a TextView variable called listItemNumberView
-        // Will display the position in the list, ie 0 through getItemCount() - 1
         TextView listItemSadrzajView;
+        TextView listItemSadrzajOpis;
+        LinearLayout linearButtons;
+        Button navigateButton;
+        Button otvoriURLButton;
 
         public SadrzajViewHolder(View itemView) {
-            // COMPLETED (15) Within the constructor, call super(itemView) and then find listItemNumberView by ID
             super(itemView);
 
             listItemSadrzajView = (TextView) itemView.findViewById(R.id.tv_sadrzaj_item);
+            listItemSadrzajOpis = (TextView) itemView.findViewById(R.id.tv_sadrzaj_opis);
+            navigateButton = (Button)itemView.findViewById(R.id.btnNavigateMap);
+            otvoriURLButton= (Button)itemView.findViewById(R.id.btnOtvoriURL);
+            linearButtons = (LinearLayout)itemView.findViewById(R.id.buttons);
+
             itemView.setOnClickListener(this);
         }
 
         void bind(int listIndex) {
-            // COMPLETED (17) Within bind, set the text of listItemNumberView to the listIndex
-            // COMPLETED (18) Be careful to get the String representation of listIndex, as using setText with an int does something different
-
             Sadrzaj sadrzaj = mSadrzajResponse.data.get(listIndex);
             listItemSadrzajView.setText(sadrzaj.naziv);
+            listItemSadrzajOpis.setText(sadrzaj.opis);
+            navigateButton.setTag(sadrzaj);
+            otvoriURLButton.setTag(sadrzaj);
         }
 
         @Override
         public void onClick(View view) {
             int clickedPosition = getAdapterPosition();
             Sadrzaj sadrzaj = mSadrzajResponse.data.get(clickedPosition);
+
+            if(listItemSadrzajOpis.getVisibility() == View.GONE){
+                listItemSadrzajOpis.setVisibility(View.VISIBLE);
+            }else {
+                listItemSadrzajOpis.setVisibility(View.GONE);
+            }
+
+            if(linearButtons.getVisibility() == View.GONE){
+                linearButtons.setVisibility(View.VISIBLE);
+            }else {
+                linearButtons.setVisibility(View.GONE);
+            }
+
             mOnClickListener.onListItemClick(sadrzaj);
         }
     }

@@ -24,6 +24,8 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -43,6 +45,7 @@ import com.google.android.gms.tasks.Task;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.Locale;
 
 import static android.content.ContentValues.TAG;
 
@@ -358,14 +361,14 @@ public class MainActivity extends AppCompatActivity implements SadrzajAdapter.Li
     }
 
     public void onListItemClick(Sadrzaj sadrzaj) {
-        Intent detailIntent = new Intent(MainActivity.this, DetailActivity.class);
-        detailIntent.putExtra(SADRZAJ_NAZIV, sadrzaj.naziv);
-        detailIntent.putExtra(SADRZAJ_OPIS, sadrzaj.opis);
-        detailIntent.putExtra(SADRZAJ_LATITUDE, sadrzaj.lokacijaLatitude);
-        detailIntent.putExtra(SADRZAJ_LONGITUDE, sadrzaj.lokacijaLongitude);
-        detailIntent.putExtra(SADRZAJ_PK, sadrzaj.pk);
+        //Intent detailIntent = new Intent(MainActivity.this, DetailActivity.class);
+        //detailIntent.putExtra(SADRZAJ_NAZIV, sadrzaj.naziv);
+        //detailIntent.putExtra(SADRZAJ_OPIS, sadrzaj.opis);
+        //detailIntent.putExtra(SADRZAJ_LATITUDE, sadrzaj.lokacijaLatitude);
+        //detailIntent.putExtra(SADRZAJ_LONGITUDE, sadrzaj.lokacijaLongitude);
+        //detailIntent.putExtra(SADRZAJ_PK, sadrzaj.pk);
 
-        startActivity(detailIntent);
+        //startActivity(detailIntent);
     }
 
     private void odradiDohvatSadrzaja() {
@@ -414,6 +417,37 @@ public class MainActivity extends AppCompatActivity implements SadrzajAdapter.Li
                 showErrorMessageView();
             }
 
+        }
+    }
+    //endregion
+
+
+    //region Dohvat i prikaz sadrzaja
+    public void onClickOtvoriURL(View v) {
+        Button btn = (Button)v;
+
+        Sadrzaj sadrzaj = (Sadrzaj)btn.getTag();
+        String url = NetworkUtils.buildUri(Integer.valueOf((sadrzaj.pk))).toString();
+
+        //Toast.makeText(this, mSadrzajData.URL, Toast.LENGTH_LONG).show();
+        Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+        startActivity(browserIntent);
+    }
+
+    public void onClickOtvoriMap(View v){
+        Button btn = (Button)v;
+
+        Sadrzaj sadrzaj = (Sadrzaj)btn.getTag();
+
+        Uri uri2 = Uri.parse(String.format(Locale.ENGLISH, "google.navigation:q=%f,%f&mode=w", sadrzaj.lokacijaLatitude, sadrzaj.lokacijaLongitude));
+        showMap(uri2);
+    }
+
+    public void showMap(Uri geoLocation) {
+        Intent intent = new Intent(Intent.ACTION_VIEW);
+        intent.setData(geoLocation);
+        if (intent.resolveActivity(getPackageManager()) != null) {
+            startActivity(intent);
         }
     }
     //endregion

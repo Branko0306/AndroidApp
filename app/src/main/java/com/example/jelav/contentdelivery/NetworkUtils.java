@@ -20,13 +20,13 @@ public final class NetworkUtils {
 
     private static final String TAG = NetworkUtils.class.getSimpleName();
 
-    private static final String AKCIJA_DOHVATI_ID = "https://webappcd.azurewebsites.net/DohvatiSadrzaj";
+    private static final String DEBUG_HOST = "http://10.0.2.2/webapp/";
+    private static final String RELEASE_HOST = "https://webappcd.azurewebsites.net/";
 
-    private static final String DEBUG_URL = "https://webappcd.azurewebsites.net//DohvatiSadrzaj/DohvatiSadrzaje";
+    private static final String AKCIJA_DOHVATI_SADRZAJ = "DohvatiSadrzaj";
+    private static final String AKCIJA_DOHVATI_SADRZAJE = "DohvatiSadrzaj/DohvatiSadrzaje";
 
-    private static final String RELEASE_URL = "https://webappcd.azurewebsites.net/webapp/DohvatiSadrzaj/DohvatiSadrzaje";
-
-    private static final String BASE_URL = DEBUG_URL;
+    private static final boolean IS_DEBUG = true;
 
     //primjer upita
     //http://192.168.5.107:58051/DohvatiSadrzaj/DohvatiSadrzaje?country=Croatia&town=Dubrovnik&Latitude=42.64696525910761&Longitude=18.08006286621094&Tagovi=tag1;tag2;tag1222&Kategorija=231231
@@ -40,13 +40,14 @@ public final class NetworkUtils {
         // COMPLETED (1) Fix this method to return the URL used to query Open Weather Map's API
         Uri builtUri = null;
 
+
         if(filteri.sadrzajID <= 0){
-            builtUri = Uri.parse(BASE_URL).buildUpon()
+            builtUri = Uri.parse(getBaseURL(AKCIJA_DOHVATI_SADRZAJE)).buildUpon()
                     .appendQueryParameter(LAT_PARAM, (Double.toString((filteri.Latitude))))
                     .appendQueryParameter(LON_PARAM, (Double.toString((filteri.Longitude))))
                     .build();
         }else {
-            builtUri = Uri.parse(BASE_URL).buildUpon()
+            builtUri = Uri.parse(getBaseURL(AKCIJA_DOHVATI_SADRZAJ)).buildUpon()
                     .appendQueryParameter(ID_PARAM, (Integer.toString((filteri.sadrzajID))))
                     .build();
         }
@@ -64,7 +65,7 @@ public final class NetworkUtils {
 
     public static Uri buildUri(int sadrzajID) {
         // COMPLETED (1) Fix this method to return the URL used to query Open Weather Map's API
-        Uri builtUri = Uri.parse(AKCIJA_DOHVATI_ID).buildUpon()
+        Uri builtUri = Uri.parse(getBaseURL(AKCIJA_DOHVATI_SADRZAJ)).buildUpon()
                     .appendQueryParameter(ID_PARAM, (Integer.toString((sadrzajID))))
                     .build();
 
@@ -106,6 +107,15 @@ public final class NetworkUtils {
             }
         } finally {
             urlConnection.disconnect();
+        }
+    }
+
+    public static String getBaseURL(String akcija) {
+
+        if(IS_DEBUG){
+           return DEBUG_HOST + akcija;
+        }else{
+            return  RELEASE_HOST + akcija;
         }
     }
 }
