@@ -103,14 +103,14 @@ public class SadrzajAdapter extends RecyclerView.Adapter<SadrzajAdapter.SadrzajV
 
             if(listItemSadrzajOpis.getVisibility() == View.GONE){
                 listItemSadrzajOpis.setVisibility(View.VISIBLE);
+                linearButtons.setVisibility(View.VISIBLE);
+                otvoriURLButton.setVisibility(View.VISIBLE);
+                navigateButton.setVisibility(View.VISIBLE);
             }else {
                 listItemSadrzajOpis.setVisibility(View.GONE);
-            }
-
-            if(linearButtons.getVisibility() == View.GONE){
-                linearButtons.setVisibility(View.VISIBLE);
-            }else {
                 linearButtons.setVisibility(View.GONE);
+                otvoriURLButton.setVisibility(View.GONE);
+                navigateButton.setVisibility(View.GONE);
             }
 
             mOnClickListener.onListItemClick(sadrzaj);

@@ -34,7 +34,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:visibility="visible">
+        android:visibility="gone">
 
         <Button
             android:id="@+id/btnNavigateMap"
@@ -42,6 +42,7 @@
             android:layout_height="33dp"
             android:onClick="onClickOtvoriMap"
             android:text="Navigate"
+            android:visibility="gone"
             android:textSize="10sp" />
 
         <Button
@@ -50,6 +51,7 @@
             android:layout_height="33dp"
             android:onClick="onClickOtvoriURL"
             android:text="Otvori"
+            android:visibility="gone"
             android:textSize="10sp" />
 
     </LinearLayout>

@@ -107,7 +107,7 @@ public class MainActivity extends AppCompatActivity implements SadrzajAdapter.Li
     private  void dopustenjeZaKoristenjeLokacije(){
         int hasWriteContactsPermission = ContextCompat.checkSelfPermission(MainActivity.this, Manifest.permission.ACCESS_FINE_LOCATION);
         if (hasWriteContactsPermission != PackageManager.PERMISSION_GRANTED) {
-            if (!ActivityCompat.shouldShowRequestPermissionRationale(MainActivity.this, Manifest.permission.ACCESS_FINE_LOCATION)) {
+            if (ActivityCompat.shouldShowRequestPermissionRationale(MainActivity.this, Manifest.permission.ACCESS_FINE_LOCATION)) {
                 showMessageOKCancel("Potrebno je dozvoliti pristup lokacijskim servisima",
                         new DialogInterface.OnClickListener() {
                             @Override
