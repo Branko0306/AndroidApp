@@ -1,10 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
 
+<android.support.design.widget.CoordinatorLayout
+    android:id="@+id/coordinator_layout"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+
 <FrameLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:id="@+id/main_layout">
+
+    <android.support.v4.widget.SwipeRefreshLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/swipeContainer"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/rv_sadrzaj"
@@ -20,12 +34,8 @@
         android:textSize="20sp"
         android:visibility="invisible" />
 
-    <ProgressBar
-        android:id="@+id/pb_loading_indicator"
-        android:layout_height="42dp"
-        android:layout_width="42dp"
-        android:layout_gravity="center"
-        android:visibility="invisible" />
-
+    </android.support.v4.widget.SwipeRefreshLayout>
 
 </FrameLayout>
+
+</android.support.design.widget.CoordinatorLayout>

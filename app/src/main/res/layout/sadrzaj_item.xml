@@ -1,60 +1,122 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/view_foreground"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:padding="16dp"
-    android:orientation="vertical">
+    android:layout_height="wrap_content" >
+
+    <ImageView
+        android:id="@+id/thumbnail"
+        android:layout_width="66dp"
+        android:layout_height="59dp"
+        android:layout_alignParentLeft="true"
+        android:layout_marginBottom="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:contentDescription="TODO"
+        android:scaleType="centerCrop"
+        android:visibility="visible"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.0" />
 
     <TextView
         android:id="@+id/tv_sadrzaj_item"
         style="@style/TextAppearance.AppCompat.Title"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_width="0dp"
+        android:layout_height="16dp"
+        android:layout_alignLeft="@+id/tv_sadrzaj_opis"
+        android:layout_alignParentTop="true"
+        android:layout_alignStart="@+id/tv_sadrzaj_opis"
         android:layout_gravity="center_vertical|start"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:layout_toLeftOf="@+id/tv_sadrzaj_vrijeme"
+        android:layout_toStartOf="@+id/tv_sadrzaj_vrijeme"
+        android:background="@color/common_google_signin_btn_text_dark_disabled"
         android:fontFamily="monospace"
-        android:textSize="18sp"
-        tools:text="#1" />
+        android:text="naziv naziv naziv"
+        android:textColor="@color/item_name"
+        android:textSize="14sp"
+        android:textStyle="bold|italic"
+        android:visibility="visible"
+        app:layout_constraintEnd_toStartOf="@+id/tv_sadrzaj_vrijeme"
+        app:layout_constraintStart_toEndOf="@+id/thumbnail"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/tv_sadrzaj_opis"
         style="@style/TextAppearance.AppCompat.Title"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_below="@+id/thumbnail"
+        android:layout_centerHorizontal="true"
         android:layout_gravity="center_vertical|start"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
         android:fontFamily="monospace"
-        android:padding="10dp"
+        android:padding="0dp"
+        android:text="opis adaiusdhauhsdiuadh"
+        android:textColor="@color/colorPrimaryDark"
         android:textSize="14sp"
-        android:visibility="gone"
-        tools:text="#2" />
+        android:visibility="visible"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toEndOf="@+id/thumbnail"
+        app:layout_constraintTop_toBottomOf="@+id/tv_sadrzaj_item"
+        tools:style="@android:style/Widget.DeviceDefault.Light.TextView"
+        tools:text="opis adaiusdhauhsdiuadh" />
 
-    <LinearLayout
-        android:id="@+id/buttons"
-        android:layout_width="match_parent"
+    <TextView
+        android:id="@+id/tv_sadrzaj_vrijeme"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:visibility="gone">
+        android:layout_alignBottom="@+id/tv_sadrzaj_item"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:layout_marginEnd="8dp"
+        android:layout_marginTop="8dp"
+        android:text="od 12:22 do 16:40"
+        android:textColor="@color/colorAccent"
+        android:textSize="14sp"
+        android:visibility="visible"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="od 12:22 do 16:40" />
 
-        <Button
-            android:id="@+id/btnNavigateMap"
-            android:layout_width="80dp"
-            android:layout_height="33dp"
-            android:onClick="onClickOtvoriMap"
-            android:text="Navigate"
-            android:visibility="gone"
-            android:textSize="10sp" />
+    <Button
+        android:id="@+id/btnOtvoriURL"
+        android:layout_width="80dp"
+        android:layout_height="33dp"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_marginEnd="8dp"
+        android:layout_marginTop="8dp"
+        android:onClick="onClickOtvoriURL"
+        android:text="@string/otvori"
+        android:textSize="10sp"
+        android:visibility="visible"
+        app:layout_constraintEnd_toStartOf="@+id/btnNavigateMap"
+        app:layout_constraintTop_toBottomOf="@+id/tv_sadrzaj_opis" />
 
-        <Button
-            android:id="@+id/btnOtvoriURL"
-            android:layout_width="80dp"
-            android:layout_height="33dp"
-            android:onClick="onClickOtvoriURL"
-            android:text="Otvori"
-            android:visibility="gone"
-            android:textSize="10sp" />
+    <Button
+        android:id="@+id/btnNavigateMap"
+        android:layout_width="80dp"
+        android:layout_height="33dp"
+        android:layout_alignBottom="@+id/btnOtvoriURL"
+        android:layout_marginTop="8dp"
+        android:layout_toLeftOf="@+id/tv_sadrzaj_vrijeme"
+        android:layout_toStartOf="@+id/tv_sadrzaj_vrijeme"
+        android:onClick="onClickOtvoriMap"
+        android:text="Navigate"
+        android:textSize="10sp"
+        android:visibility="visible"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tv_sadrzaj_opis" />
 
-    </LinearLayout>
-
-
-</LinearLayout>
+</android.support.constraint.ConstraintLayout>

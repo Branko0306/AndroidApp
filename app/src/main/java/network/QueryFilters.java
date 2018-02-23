@@ -1,4 +1,4 @@
-package com.example.jelav.contentdelivery;
+package network;
 
 import java.util.List;
 
@@ -7,11 +7,7 @@ import java.util.List;
  */
 
 public final class QueryFilters {
-    public List<String> Kategorije;
-    public List<String> Tagovi;
     public double Latitude;
     public double Longitude;
-    public String Town;
-    public String Country;
     public int sadrzajID;
 }

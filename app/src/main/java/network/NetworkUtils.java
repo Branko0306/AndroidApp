@@ -1,9 +1,7 @@
-package com.example.jelav.contentdelivery;
+package network;
 
 import android.net.Uri;
 import android.util.Log;
-
-import com.example.jelav.contentdelivery.QueryFilters;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -24,6 +22,7 @@ public final class NetworkUtils {
     private static final String RELEASE_HOST = "https://webappcd.azurewebsites.net/";
 
     private static final String AKCIJA_DOHVATI_SADRZAJ = "DohvatiSadrzaj";
+    private static final String AKCIJA_DOHVATI_SADRZAJ_PICTURE = "Sadrzaj/GetPicture";
     private static final String AKCIJA_DOHVATI_SADRZAJE = "DohvatiSadrzaj/DohvatiSadrzaje";
 
     private static final boolean IS_DEBUG = false;
@@ -35,6 +34,7 @@ public final class NetworkUtils {
     final static String KAT_PARAM = "Kategorije";
     final static String TAG_PARAM = "Tagovi";
     final static String ID_PARAM = "sadrzajID";
+    final static String ID_SADRZAJ_PICTURE = "id";
 
     public static URL buildUrl(QueryFilters filteri) {
         // COMPLETED (1) Fix this method to return the URL used to query Open Weather Map's API
@@ -72,6 +72,15 @@ public final class NetworkUtils {
         return builtUri;
     }
 
+    public static Uri buildUriGetPicture(int sadrzajID) {
+        // COMPLETED (1) Fix this method to return the URL used to query Open Weather Map's API
+        Uri builtUri = Uri.parse(getBaseURL(AKCIJA_DOHVATI_SADRZAJ_PICTURE)).buildUpon()
+                .appendQueryParameter(ID_SADRZAJ_PICTURE, (Integer.toString((sadrzajID))))
+                .build();
+
+        return builtUri;
+    }
+
     public static URL buildUrl(Uri uri){
         URL url = null;
         try {
@@ -84,13 +93,6 @@ public final class NetworkUtils {
         return url;
     }
 
-    /**
-     * This method returns the entire result from the HTTP response.
-     *
-     * @param url The URL to fetch the HTTP response from.
-     * @return The contents of the HTTP response.
-     * @throws IOException Related to network and stream reading
-     */
     public static String getResponseFromHttpUrl(URL url) throws IOException {
         HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
         try {

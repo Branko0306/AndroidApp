@@ -2,31 +2,33 @@ package com.example.jelav.contentdelivery;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
-import android.annotation.TargetApi;
+import android.arch.persistence.room.Room;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentSender;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.location.Location;
 import android.net.Uri;
 import android.os.AsyncTask;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.design.widget.CoordinatorLayout;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
+import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
-import android.widget.LinearLayout;
-import android.widget.ProgressBar;
+import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -47,11 +49,21 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.Locale;
 
-import static android.content.ContentValues.TAG;
+import database.ApplicationDatabase;
+import database.SadrzajLogEntity;
+import database.SadrzajLogEntityDao;
+import models.Sadrzaj;
+import models.SadrzajResponse;
+import network.NetworkUtils;
+import network.QueryFilters;
+import utils.SadrzajWrapper;
 
-public class MainActivity extends AppCompatActivity implements SadrzajAdapter.ListItemClickListener {
+public class MainActivity extends AppCompatActivity implements
+        SadrzajAdapter.ListItemClickListener,
+        RecyclerItemTouchHelper.RecyclerItemTouchHelperListener {
 
     //region Static final memberi
+
     private static final String REQUESTING_LOCATION_UPDATES_KEY = "REQUESTING_LOCATION_UPDATES_KEY";
     private static final String LOCATION_GRANTED_KEY = "LOCATION_GRANTED_KEY";
     private static final String LOCATION_LATITUDE = "LOCATION_LATITUDE";
@@ -65,6 +77,7 @@ public class MainActivity extends AppCompatActivity implements SadrzajAdapter.Li
 
     private static final int REQUEST_CHECK_SETTINGS = 1;
     private static final int MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 1;
+
     //endregion
 
     private Location mLocation;
@@ -72,13 +85,16 @@ public class MainActivity extends AppCompatActivity implements SadrzajAdapter.Li
     private RecyclerView mRecyclerView;
     private SadrzajResponse mSadrzajResponse;
     private Toast mToast;
-    private ProgressBar mLoadingIndicator;
     private TextView mErrorMessageDisplay;
     private FusedLocationProviderClient mFusedLocationClient;
     private LocationRequest mLocationRequest;
     private LocationCallback mLocationCallback;
     private boolean mRequestingLocationUpdates;
     private boolean mLocationGranted;
+    private SwipeRefreshLayout swipeContainer;
+    private CoordinatorLayout coordinatorLayout;
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -86,7 +102,9 @@ public class MainActivity extends AppCompatActivity implements SadrzajAdapter.Li
         setContentView(R.layout.activity_main);
 
         mErrorMessageDisplay = (TextView) findViewById(R.id.tv_error_message_display);
-        mLoadingIndicator = (ProgressBar) findViewById(R.id.pb_loading_indicator);
+        swipeContainer = (SwipeRefreshLayout) findViewById(R.id.swipeContainer);
+        coordinatorLayout = findViewById(R.id.coordinator_layout);
+
         mRequestingLocationUpdates = true;
 
         updateValuesFromBundle(savedInstanceState); //vrati stanje aplikacije nakon rotacije
@@ -99,9 +117,75 @@ public class MainActivity extends AppCompatActivity implements SadrzajAdapter.Li
         mRecyclerView.setLayoutManager(layoutManager);
         mRecyclerView.setHasFixedSize(true);
 
-        mAdapter = new SadrzajAdapter(this);
+        mAdapter = new SadrzajAdapter(getApplicationContext(), this);
         mRecyclerView.setAdapter(mAdapter);
+
+        ItemTouchHelper.SimpleCallback itemTouchHelperCallback = new RecyclerItemTouchHelper(0, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT, this);
+        new ItemTouchHelper(itemTouchHelperCallback).attachToRecyclerView(mRecyclerView);
+
+        konfigurirajSwipeRefreshLayout();
     }
+
+    //region SwipeRefreshLayout
+
+    @Override
+    public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction, int position) {
+        final Sadrzaj deletedItem = mAdapter.getItem(viewHolder.getAdapterPosition());
+        final int deletedIndex = viewHolder.getAdapterPosition();
+
+        if(direction == ItemTouchHelper.LEFT) {
+
+            mAdapter.removeItem(viewHolder.getAdapterPosition());
+
+            Snackbar snackbar = Snackbar.make(coordinatorLayout, "Ne želite primati obavijesti za kategoriju", Snackbar.LENGTH_LONG);
+            snackbar.setAction("PONIŠTI", new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    mAdapter.restoreItem(deletedItem, deletedIndex);
+                }
+            });
+            snackbar.setActionTextColor(Color.YELLOW);
+            snackbar.show();
+        }
+        else if(direction == ItemTouchHelper.RIGHT){
+            mAdapter.removeItem(viewHolder.getAdapterPosition());
+
+            Snackbar snackbar = Snackbar.make(coordinatorLayout, "Ne želite primati obavijesti ovog oglašivaća", Snackbar.LENGTH_LONG);
+            snackbar.setAction("PONIŠTI", new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    mAdapter.restoreItem(deletedItem, deletedIndex);
+                }
+            });
+            snackbar.setActionTextColor(Color.YELLOW);
+            snackbar.show();
+        }
+    }
+
+    @Override
+    public void onPointerCaptureChanged(boolean hasCapture) {
+
+    }
+
+    private void konfigurirajSwipeRefreshLayout(){
+
+        swipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                mAdapter.setSadrzajData(null);
+                odradiDohvatSadrzaja();
+
+                swipeContainer.setRefreshing(false);
+            }
+        });
+        // Configure the refreshing colors
+        swipeContainer.setColorSchemeResources(android.R.color.holo_blue_bright,
+                android.R.color.holo_green_light,
+                android.R.color.holo_orange_light,
+                android.R.color.holo_red_light);
+    }
+
+    //endregion
 
     //region Trazenje dozvole za lokacijske servise
     private  void dopustenjeZaKoristenjeLokacije(){
@@ -192,8 +276,8 @@ public class MainActivity extends AppCompatActivity implements SadrzajAdapter.Li
 
     protected void createLocationRequest() {
         mLocationRequest = new LocationRequest();
-        mLocationRequest.setInterval(10000);
-        mLocationRequest.setFastestInterval(5000);
+        mLocationRequest.setInterval(100000);
+        mLocationRequest.setFastestInterval(50000);
         mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
 
         LocationSettingsRequest.Builder builder = new LocationSettingsRequest.Builder().addLocationRequest(mLocationRequest);
@@ -308,23 +392,14 @@ public class MainActivity extends AppCompatActivity implements SadrzajAdapter.Li
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        /* Use AppCompatActivity's method getMenuInflater to get a handle on the menu inflater */
         MenuInflater inflater = getMenuInflater();
-        /* Use the inflater's inflate method to inflate our menu layout to this menu */
         inflater.inflate(R.menu.sadrzaj, menu);
-        /* Return true so that the menu is displayed in the Toolbar */
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
-
-        if (id == R.id.action_refresh) {
-            mAdapter.setSadrzajData(null);
-            odradiDohvatSadrzaja();
-            return true;
-        }
 
         return super.onOptionsItemSelected(item);
     }
@@ -348,7 +423,6 @@ public class MainActivity extends AppCompatActivity implements SadrzajAdapter.Li
     private void showSadrzajDataView() {
         /* First, make sure the error is invisible */
         mErrorMessageDisplay.setVisibility(View.INVISIBLE);
-        mLoadingIndicator.setVisibility(View.INVISIBLE);
         /* Then, make sure the weather data is visible */
         mRecyclerView.setVisibility(View.VISIBLE);
     }
@@ -381,6 +455,7 @@ public class MainActivity extends AppCompatActivity implements SadrzajAdapter.Li
             return;
         }
 
+
         QueryFilters filters = new QueryFilters();
         filters.Longitude = mLocation.getLongitude();
         filters.Latitude = mLocation.getLatitude();
@@ -389,29 +464,32 @@ public class MainActivity extends AppCompatActivity implements SadrzajAdapter.Li
         new SadrzajDohvatTask().execute(url);
     }
 
-    public class SadrzajDohvatTask extends AsyncTask<URL, Void, String> {
+
+
+    public class SadrzajDohvatTask extends AsyncTask<URL, Void, SadrzajResponse> {
         @Override
-        protected String doInBackground(URL... urls) {
+        protected SadrzajResponse doInBackground(URL... urls) {
             URL searchUrl = urls[0];
             String result = null;
+            SadrzajResponse response = null;
             try {
                 result = NetworkUtils.getResponseFromHttpUrl(searchUrl);
+                response = SadrzajWrapper.fromJson(result);
             } catch (IOException e) {
                 e.printStackTrace();
             }
-            return result;
+            return response;
         }
 
         protected void onPreExecute() {
             super.onPreExecute();
-            mLoadingIndicator.setVisibility(View.VISIBLE);
         }
 
         @Override
-        protected void onPostExecute(String result) {
+        protected void onPostExecute(SadrzajResponse result) {
             showSadrzajDataView();
             if (result != null && !result.equals("")) {
-                mSadrzajResponse = SadrzajWrapper.fromJson(result);
+                mSadrzajResponse = result;
                 mAdapter.setSadrzajData(mSadrzajResponse);
             } else {
                 showErrorMessageView();
@@ -419,8 +497,8 @@ public class MainActivity extends AppCompatActivity implements SadrzajAdapter.Li
 
         }
     }
-    //endregion
 
+    //endregion
 
     //region Dohvat i prikaz sadrzaja
     public void onClickOtvoriURL(View v) {
@@ -450,5 +528,6 @@ public class MainActivity extends AppCompatActivity implements SadrzajAdapter.Li
             startActivity(intent);
         }
     }
+
     //endregion
 }

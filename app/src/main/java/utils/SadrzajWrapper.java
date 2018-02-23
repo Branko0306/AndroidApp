@@ -1,5 +1,7 @@
-package com.example.jelav.contentdelivery;
+package utils;
 import com.google.gson.Gson;
+
+import models.SadrzajResponse;
 
 /**
  * Created by jelav on 28/12/2017.
