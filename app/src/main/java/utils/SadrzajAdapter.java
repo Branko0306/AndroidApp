@@ -1,6 +1,8 @@
-package com.example.jelav.contentdelivery;
+package utils;
 
+import android.arch.persistence.room.Room;
 import android.content.Context;
+import android.os.AsyncTask;
 import android.support.constraint.ConstraintLayout;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -8,12 +10,18 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.Switch;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.example.jelav.contentdelivery.R;
 
+import java.io.IOException;
+import java.net.URL;
+
+import database.ApplicationDatabase;
+import database.SadrzajLogEntity;
+import database.SadrzajLogEntityDao;
 import models.Sadrzaj;
 import models.SadrzajResponse;
 import network.NetworkUtils;
@@ -26,7 +34,6 @@ public class SadrzajAdapter extends RecyclerView.Adapter<SadrzajAdapter.SadrzajV
 
     private static final String TAG = SadrzajAdapter.class.getSimpleName();
 
-    final private ListItemClickListener mOnClickListener;
     private final Context context;
 
     public interface ListItemClickListener {
@@ -35,8 +42,7 @@ public class SadrzajAdapter extends RecyclerView.Adapter<SadrzajAdapter.SadrzajV
 
     private SadrzajResponse mSadrzajResponse;
 
-    public SadrzajAdapter(Context context, ListItemClickListener listener){
-        mOnClickListener = listener;
+    public SadrzajAdapter(Context context){
         this.context=context;
     }
 
@@ -91,6 +97,7 @@ public class SadrzajAdapter extends RecyclerView.Adapter<SadrzajAdapter.SadrzajV
     }
 
     //region SadrzajViewHolder
+
     class SadrzajViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
         TextView listItemSadrzajView;
@@ -145,12 +152,8 @@ public class SadrzajAdapter extends RecyclerView.Adapter<SadrzajAdapter.SadrzajV
                 otvoriURLButton.setVisibility(View.GONE);
                 navigateButton.setVisibility(View.GONE);
             }
-
-            mOnClickListener.onListItemClick(sadrzaj);
         }
     }
 
     //endregion
-
-
 }

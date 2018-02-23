@@ -28,7 +28,6 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
-import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -56,10 +55,11 @@ import models.Sadrzaj;
 import models.SadrzajResponse;
 import network.NetworkUtils;
 import network.QueryFilters;
+import utils.RecyclerItemTouchHelper;
+import utils.SadrzajAdapter;
 import utils.SadrzajWrapper;
 
 public class MainActivity extends AppCompatActivity implements
-        SadrzajAdapter.ListItemClickListener,
         RecyclerItemTouchHelper.RecyclerItemTouchHelperListener {
 
     //region Static final memberi
@@ -117,7 +117,7 @@ public class MainActivity extends AppCompatActivity implements
         mRecyclerView.setLayoutManager(layoutManager);
         mRecyclerView.setHasFixedSize(true);
 
-        mAdapter = new SadrzajAdapter(getApplicationContext(), this);
+        mAdapter = new SadrzajAdapter( this);
         mRecyclerView.setAdapter(mAdapter);
 
         ItemTouchHelper.SimpleCallback itemTouchHelperCallback = new RecyclerItemTouchHelper(0, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT, this);
@@ -148,13 +148,30 @@ public class MainActivity extends AppCompatActivity implements
             snackbar.show();
         }
         else if(direction == ItemTouchHelper.RIGHT){
+            Sadrzaj sadrzaj = mAdapter.getItem(viewHolder.getAdapterPosition());
             mAdapter.removeItem(viewHolder.getAdapterPosition());
 
-            Snackbar snackbar = Snackbar.make(coordinatorLayout, "Ne želite primati obavijesti ovog oglašivaća", Snackbar.LENGTH_LONG);
+            if(sadrzaj != null) {
+                Parametri params = new Parametri();
+                params.PK = sadrzaj.pk;
+                params.skrivenSadrzaj = true;
+                params.obavijestPrikazana = true;
+                new SpremiSkrivenTask().execute(params);
+            }
+
+            Snackbar snackbar = Snackbar.make(coordinatorLayout, "Uklonili ste sadržaj", Snackbar.LENGTH_LONG);
             snackbar.setAction("PONIŠTI", new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     mAdapter.restoreItem(deletedItem, deletedIndex);
+
+                    if(deletedItem != null) {
+                        Parametri params = new Parametri();
+                        params.PK = deletedItem.pk;
+                        params.skrivenSadrzaj = false;
+                        params.obavijestPrikazana = false;
+                        new SpremiSkrivenTask().execute(params);
+                    }
                 }
             });
             snackbar.setActionTextColor(Color.YELLOW);
@@ -434,17 +451,6 @@ public class MainActivity extends AppCompatActivity implements
         mErrorMessageDisplay.setVisibility(View.VISIBLE);
     }
 
-    public void onListItemClick(Sadrzaj sadrzaj) {
-        //Intent detailIntent = new Intent(MainActivity.this, DetailActivity.class);
-        //detailIntent.putExtra(SADRZAJ_NAZIV, sadrzaj.naziv);
-        //detailIntent.putExtra(SADRZAJ_OPIS, sadrzaj.opis);
-        //detailIntent.putExtra(SADRZAJ_LATITUDE, sadrzaj.lokacijaLatitude);
-        //detailIntent.putExtra(SADRZAJ_LONGITUDE, sadrzaj.lokacijaLongitude);
-        //detailIntent.putExtra(SADRZAJ_PK, sadrzaj.pk);
-
-        //startActivity(detailIntent);
-    }
-
     private void odradiDohvatSadrzaja() {
 
         if (!mLocationGranted) {
@@ -530,4 +536,38 @@ public class MainActivity extends AppCompatActivity implements
     }
 
     //endregion
+
+    public class SpremiSkrivenTask extends AsyncTask<Parametri, Void, Boolean> {
+        @Override
+        protected Boolean doInBackground(Parametri... params) {
+
+            Parametri parametri = params[0];
+
+            ApplicationDatabase db = Room.databaseBuilder(getApplicationContext(), ApplicationDatabase.class, "AppDatabase").build();
+            SadrzajLogEntityDao dao = db.SadrzajLogEntityDao();
+
+            SadrzajLogEntity entity = new SadrzajLogEntity();
+            entity.setSadrzajPK(parametri.PK);
+            entity.setSkriven(parametri.skrivenSadrzaj);
+            entity.setPrikazanaObavijest(parametri.obavijestPrikazana);
+            dao.insertSadrzajLogEntity(entity);
+
+            return true;
+        }
+
+        protected void onPreExecute() {
+            super.onPreExecute();
+        }
+
+        @Override
+        protected void onPostExecute(Boolean result) {
+
+        }
+    }
+
+    public  class Parametri{
+        public int PK;
+        public boolean skrivenSadrzaj;
+        public boolean obavijestPrikazana;
+    }
 }
