@@ -46,6 +46,7 @@ import com.google.android.gms.tasks.Task;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.List;
 import java.util.Locale;
 
 import database.ApplicationDatabase;
@@ -466,20 +467,27 @@ public class MainActivity extends AppCompatActivity implements
         filters.Longitude = mLocation.getLongitude();
         filters.Latitude = mLocation.getLatitude();
 
-        URL url = NetworkUtils.buildUrl(filters);
-        new SadrzajDohvatTask().execute(url);
+        new SadrzajDohvatTask().execute(filters);
     }
 
 
 
-    public class SadrzajDohvatTask extends AsyncTask<URL, Void, SadrzajResponse> {
+    public class SadrzajDohvatTask extends AsyncTask<QueryFilters, Void, SadrzajResponse> {
         @Override
-        protected SadrzajResponse doInBackground(URL... urls) {
-            URL searchUrl = urls[0];
+        protected SadrzajResponse doInBackground(QueryFilters... filters) {
+            QueryFilters filteri = filters[0];
+
+            ApplicationDatabase db = Room.databaseBuilder(getApplicationContext(), ApplicationDatabase.class, "AppDatabase").build();
+            SadrzajLogEntityDao dao = db.SadrzajLogEntityDao();
+
+            filteri.skriveniSadrzaji = dao.getSkrivenAll();
+
+            URL url = NetworkUtils.buildUrl(filteri);
+
             String result = null;
             SadrzajResponse response = null;
             try {
-                result = NetworkUtils.getResponseFromHttpUrl(searchUrl);
+                result = NetworkUtils.getResponseFromHttpUrl(url);
                 response = SadrzajWrapper.fromJson(result);
             } catch (IOException e) {
                 e.printStackTrace();

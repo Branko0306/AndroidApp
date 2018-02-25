@@ -7,6 +7,7 @@ import android.arch.persistence.room.OnConflictStrategy;
 import android.arch.persistence.room.Query;
 import android.arch.persistence.room.Update;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import models.Sadrzaj;
@@ -16,6 +17,9 @@ public interface SadrzajLogEntityDao {
 
     @Query("SELECT * FROM SadrzajLogEntity")
     List<SadrzajLogEntity> getAll();
+
+    @Query("SELECT sadrzaj_pk FROM SadrzajLogEntity where skriven = 1")
+    List<Integer> getSkrivenAll();
 
     @Query("SELECT * FROM SadrzajLogEntity WHERE sadrzaj_pk = :sadrzaj_pk")
     SadrzajLogEntity getByID(int sadrzaj_pk);
