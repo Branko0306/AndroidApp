@@ -103,7 +103,7 @@ public class NotificationUtils {
                     .setContentIntent(contentIntent(context))
                     .addAction(otvoriNotifikacijuAkcija(context))
                     .addAction(otkaziNotifikacijuAkcija(context))
-                    .setAutoCancel(true);
+                    .setAutoCancel(true); 
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN && Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
                 notificationBuilder.setPriority(NotificationCompat.PRIORITY_HIGH);
