@@ -8,21 +8,26 @@ import android.arch.persistence.room.ColumnInfo;
 
 public class Sadrzaj {
 
-    public Integer pk;
+    public Integer PK;
 
-    public String naziv;
+    public String Naziv;
 
-    public String skraceniopis;
+    public String SkraceniOpis;
 
-    public String opis;
+    public String DugiOpis;
 
-    public String kategorija;
+    public String Kategorija;
 
-    public Double lokacijaLatitude;
+    public Double LokacijaLatitude;
 
-    public Double lokacijaLongitude;
+    public Double LokacijaLongitude;
 
-    public Integer udaljenost;
+    public Integer Udaljenost;
 
-    public Integer lokacijaPK;
+    public Integer LokacijaPK;
+
+    public Integer SatiOd;
+    public Integer SatiDo;
+    public Integer MinuteOd;
+    public Integer MinuteDo;
 }

@@ -2,5 +2,10 @@
     <string name="app_name">ContentDelivery</string>
     <string name="error_message">Dogodila se greška prilikom dohvata podataka</string>
     <string name="otvori">Otvori</string>
+    <string name="notification_name">Notification name</string>
+    <string name="charging_reminder_notification_body">body</string>
+    <string name="charging_reminder_notification_title">title</string>
+    <string name="latitude">locationLatitude</string>
+    <string name="longitude">locationLongitude</string>
 
 </resources>

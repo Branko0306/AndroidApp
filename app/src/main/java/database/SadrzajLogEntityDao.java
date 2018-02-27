@@ -21,6 +21,9 @@ public interface SadrzajLogEntityDao {
     @Query("SELECT sadrzaj_pk FROM SadrzajLogEntity where skriven = 1")
     List<Integer> getSkrivenAll();
 
+    @Query("SELECT sadrzaj_pk FROM SadrzajLogEntity where skriven = 1 and prikazanaObavijest = 1")
+    List<Integer> getSkrivenPrikazanaObavijestAll();
+
     @Query("SELECT * FROM SadrzajLogEntity WHERE sadrzaj_pk = :sadrzaj_pk")
     SadrzajLogEntity getByID(int sadrzaj_pk);
 

@@ -10,8 +10,10 @@ import java.util.List;
 public final class QueryFilters {
 
     public QueryFilters(){
+        najblizi = false;
     }
 
+    public boolean najblizi;
     public double Latitude;
     public double Longitude;
     public int sadrzajID;

@@ -14,10 +14,20 @@
         <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <service
+            android:name="utils.ReminderIntentService"
+            android:exported="false" />
+        <service
+            android:name="utils.ReminderFirebaseJobService"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.firebase.jobdispatcher.ACTION_EXECUTE"/>
+            </intent-filter>
+        </service>
+
     </application>
 
 </manifest>

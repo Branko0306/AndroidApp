@@ -1,6 +1,7 @@
 package utils;
 import com.google.gson.Gson;
 
+import models.Sadrzaj;
 import models.SadrzajResponse;
 
 /**
@@ -13,6 +14,12 @@ public class SadrzajWrapper {
         Gson gson = new Gson();
         return gson.fromJson(jsonString, SadrzajResponse.class);
     }
+
+    public  static Sadrzaj fromJsonSingle(String jsonString){
+        Gson gson = new Gson();
+        return gson.fromJson(jsonString, Sadrzaj.class);
+    }
+
 
     public static String toString(SadrzajResponse response) {
         Gson gson = new Gson();

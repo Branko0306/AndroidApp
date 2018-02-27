@@ -24,6 +24,7 @@ public final class NetworkUtils {
     private static final String AKCIJA_DOHVATI_SADRZAJ = "DohvatiSadrzaj";
     private static final String AKCIJA_DOHVATI_SADRZAJ_PICTURE = "Sadrzaj/GetPicture";
     private static final String AKCIJA_DOHVATI_SADRZAJE = "DohvatiSadrzaj/DohvatiSadrzaje";
+    private static final String AKCIJA_DOHVAT_NAJBLIZI = "DohvatiSadrzaj/DohvatiNajblizi";
 
     private static final boolean IS_DEBUG = true;
 
@@ -41,17 +42,28 @@ public final class NetworkUtils {
         // COMPLETED (1) Fix this method to return the URL used to query Open Weather Map's API
         Uri builtUri = null;
 
-        if(filteri.sadrzajID <= 0){
-            builtUri = Uri.parse(getBaseURL(AKCIJA_DOHVATI_SADRZAJE)).buildUpon()
+        if(filteri.najblizi){
+            builtUri = Uri.parse(getBaseURL(AKCIJA_DOHVAT_NAJBLIZI)).buildUpon()
                     .appendQueryParameter(LAT_PARAM, (Double.toString((filteri.Latitude))))
                     .appendQueryParameter(LON_PARAM, (Double.toString((filteri.Longitude))))
                     .appendQueryParameter(SKRIVENI_SADRZAJI, filteri.getSkriveni())
                     .build();
-        }else {
-            builtUri = Uri.parse(getBaseURL(AKCIJA_DOHVATI_SADRZAJ)).buildUpon()
+        }
+
+        if(builtUri == null){
+            if(filteri.sadrzajID <= 0){
+                builtUri = Uri.parse(getBaseURL(AKCIJA_DOHVATI_SADRZAJE)).buildUpon()
+                    .appendQueryParameter(LAT_PARAM, (Double.toString((filteri.Latitude))))
+                    .appendQueryParameter(LON_PARAM, (Double.toString((filteri.Longitude))))
+                    .appendQueryParameter(SKRIVENI_SADRZAJI, filteri.getSkriveni())
+                    .build();
+            }
+            else {
+                builtUri = Uri.parse(getBaseURL(AKCIJA_DOHVATI_SADRZAJ)).buildUpon()
                     .appendQueryParameter(ID_PARAM, (Integer.toString((filteri.sadrzajID))))
                     .appendQueryParameter(SKRIVENI_SADRZAJI, filteri.getSkriveni())
                     .build();
+            }
         }
 
         URL url = null;

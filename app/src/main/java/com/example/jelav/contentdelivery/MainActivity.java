@@ -3,9 +3,11 @@ package com.example.jelav.contentdelivery;
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.arch.persistence.room.Room;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentSender;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.location.Location;
@@ -46,6 +48,7 @@ import com.google.android.gms.tasks.Task;
 
 import java.io.IOException;
 import java.net.URL;
+import java.sql.SQLException;
 import java.util.List;
 import java.util.Locale;
 
@@ -56,7 +59,9 @@ import models.Sadrzaj;
 import models.SadrzajResponse;
 import network.NetworkUtils;
 import network.QueryFilters;
+import utils.NotificationUtils;
 import utils.RecyclerItemTouchHelper;
+import utils.ReminderUtilities;
 import utils.SadrzajAdapter;
 import utils.SadrzajWrapper;
 
@@ -125,6 +130,8 @@ public class MainActivity extends AppCompatActivity implements
         new ItemTouchHelper(itemTouchHelperCallback).attachToRecyclerView(mRecyclerView);
 
         konfigurirajSwipeRefreshLayout();
+
+        ReminderUtilities.scheduleChargingReminder(this);
     }
 
     //region SwipeRefreshLayout
@@ -154,7 +161,7 @@ public class MainActivity extends AppCompatActivity implements
 
             if(sadrzaj != null) {
                 Parametri params = new Parametri();
-                params.PK = sadrzaj.pk;
+                params.PK = sadrzaj.PK;
                 params.skrivenSadrzaj = true;
                 params.obavijestPrikazana = true;
                 new SpremiSkrivenTask().execute(params);
@@ -168,7 +175,7 @@ public class MainActivity extends AppCompatActivity implements
 
                     if(deletedItem != null) {
                         Parametri params = new Parametri();
-                        params.PK = deletedItem.pk;
+                        params.PK = deletedItem.PK;
                         params.skrivenSadrzaj = false;
                         params.obavijestPrikazana = false;
                         new SpremiSkrivenTask().execute(params);
@@ -257,6 +264,7 @@ public class MainActivity extends AppCompatActivity implements
                         }
 
                         mLocation = location;
+                        spremiLokacijuUPreferences();
                     }
                 });
 
@@ -267,10 +275,23 @@ public class MainActivity extends AppCompatActivity implements
                     mLocation = location;
                     break;
                 }
+
+                spremiLokacijuUPreferences();
                 odradiDohvatSadrzaja();
             }
         };
     }
+
+    private void spremiLokacijuUPreferences() {
+
+        SharedPreferences sharedPref = getApplicationContext().getSharedPreferences(getString(R.string.app_name), Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPref.edit();
+        editor.putString(getString(R.string.latitude), String.valueOf(mLocation.getLatitude()));
+        editor.putString(getString(R.string.longitude), String.valueOf(mLocation.getLongitude()));
+        editor.commit();
+
+    }
+
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
 
@@ -470,8 +491,6 @@ public class MainActivity extends AppCompatActivity implements
         new SadrzajDohvatTask().execute(filters);
     }
 
-
-
     public class SadrzajDohvatTask extends AsyncTask<QueryFilters, Void, SadrzajResponse> {
         @Override
         protected SadrzajResponse doInBackground(QueryFilters... filters) {
@@ -491,6 +510,8 @@ public class MainActivity extends AppCompatActivity implements
                 response = SadrzajWrapper.fromJson(result);
             } catch (IOException e) {
                 e.printStackTrace();
+            }finally {
+                db.close();
             }
             return response;
         }
@@ -519,7 +540,7 @@ public class MainActivity extends AppCompatActivity implements
         Button btn = (Button)v;
 
         Sadrzaj sadrzaj = (Sadrzaj)btn.getTag();
-        String url = NetworkUtils.buildUri(Integer.valueOf((sadrzaj.pk))).toString();
+        String url = NetworkUtils.buildUri(Integer.valueOf((sadrzaj.PK))).toString();
 
         //Toast.makeText(this, mSadrzajData.URL, Toast.LENGTH_LONG).show();
         Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
@@ -531,7 +552,7 @@ public class MainActivity extends AppCompatActivity implements
 
         Sadrzaj sadrzaj = (Sadrzaj)btn.getTag();
 
-        Uri uri2 = Uri.parse(String.format(Locale.ENGLISH, "google.navigation:q=%f,%f&mode=w", sadrzaj.lokacijaLatitude, sadrzaj.lokacijaLongitude));
+        Uri uri2 = Uri.parse(String.format(Locale.ENGLISH, "google.navigation:q=%f,%f&mode=w", sadrzaj.LokacijaLatitude, sadrzaj.LokacijaLongitude));
         showMap(uri2);
     }
 
@@ -554,11 +575,20 @@ public class MainActivity extends AppCompatActivity implements
             ApplicationDatabase db = Room.databaseBuilder(getApplicationContext(), ApplicationDatabase.class, "AppDatabase").build();
             SadrzajLogEntityDao dao = db.SadrzajLogEntityDao();
 
-            SadrzajLogEntity entity = new SadrzajLogEntity();
-            entity.setSadrzajPK(parametri.PK);
-            entity.setSkriven(parametri.skrivenSadrzaj);
-            entity.setPrikazanaObavijest(parametri.obavijestPrikazana);
-            dao.insertSadrzajLogEntity(entity);
+            try {
+                SadrzajLogEntity entity = new SadrzajLogEntity();
+                entity.setSadrzajPK(parametri.PK);
+                entity.setSkriven(parametri.skrivenSadrzaj);
+                entity.setPrikazanaObavijest(parametri.obavijestPrikazana);
+                dao.insertSadrzajLogEntity(entity);
+
+                db.setTransactionSuccessful();
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            } finally {
+                db.close();
+            }
 
             return true;
         }

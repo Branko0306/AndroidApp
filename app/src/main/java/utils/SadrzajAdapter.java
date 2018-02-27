@@ -123,13 +123,13 @@ public class SadrzajAdapter extends RecyclerView.Adapter<SadrzajAdapter.SadrzajV
 
         void bind(int listIndex) {
             Sadrzaj sadrzaj = mSadrzajResponse.data.get(listIndex);
-            listItemSadrzajView.setText(sadrzaj.naziv);
-            listItemSadrzajOpis.setText(sadrzaj.opis);
+            listItemSadrzajView.setText(sadrzaj.Naziv);
+            listItemSadrzajOpis.setText(sadrzaj.DugiOpis);
 
             navigateButton.setTag(sadrzaj);
             otvoriURLButton.setTag(sadrzaj);
 
-            Glide.with(context).load(NetworkUtils.buildUriGetPicture(sadrzaj.pk))
+            Glide.with(context).load(NetworkUtils.buildUriGetPicture(sadrzaj.PK))
                     .diskCacheStrategy(DiskCacheStrategy.ALL) // Cache the original size to disk so that open will be fast
                     .skipMemoryCache(true)  // Cache everything
                     .fitCenter() // scale to fit entire image within ImageView
