@@ -2,7 +2,6 @@ package com.example.jelav.contentdelivery;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
-import android.arch.persistence.room.Room;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -30,10 +29,12 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.common.api.ResolvableApiException;
+import com.google.android.gms.iid.InstanceID;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
@@ -46,19 +47,24 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 import java.net.URL;
+import java.net.URLConnection;
+import java.net.URLEncoder;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Locale;
 
-import database.ApplicationDatabase;
-import database.SadrzajLogEntity;
-import database.SadrzajLogEntityDao;
 import models.Sadrzaj;
 import models.SadrzajResponse;
 import network.NetworkUtils;
+import network.PostSadrzajSkriven;
 import network.QueryFilters;
+import network.QuerySadrzaj;
+import network.QuerySadrzaji;
 import utils.NotificationUtils;
 import utils.RecyclerItemTouchHelper;
 import utils.ReminderUtilities;
@@ -99,7 +105,7 @@ public class MainActivity extends AppCompatActivity implements
     private boolean mLocationGranted;
     private SwipeRefreshLayout swipeContainer;
     private CoordinatorLayout coordinatorLayout;
-
+    private String mInstance;
 
 
     @Override
@@ -130,6 +136,9 @@ public class MainActivity extends AppCompatActivity implements
         new ItemTouchHelper(itemTouchHelperCallback).attachToRecyclerView(mRecyclerView);
 
         konfigurirajSwipeRefreshLayout();
+
+        InstanceID instanceID = InstanceID.getInstance(this);
+        mInstance = instanceID.getId();
 
         ReminderUtilities.scheduleChargingReminder(this);
     }
@@ -484,22 +493,20 @@ public class MainActivity extends AppCompatActivity implements
         }
 
 
-        QueryFilters filters = new QueryFilters();
+        QuerySadrzaji filters = new QuerySadrzaji();
         filters.Longitude = mLocation.getLongitude();
         filters.Latitude = mLocation.getLatitude();
+        filters.instanceID = mInstance;
 
         new SadrzajDohvatTask().execute(filters);
     }
 
-    public class SadrzajDohvatTask extends AsyncTask<QueryFilters, Void, SadrzajResponse> {
+    public class SadrzajDohvatTask extends AsyncTask<QuerySadrzaji, Void, SadrzajResponse> {
         @Override
-        protected SadrzajResponse doInBackground(QueryFilters... filters) {
-            QueryFilters filteri = filters[0];
+        protected SadrzajResponse doInBackground(QuerySadrzaji... filters) {
+            QuerySadrzaji filteri = filters[0];
 
-            ApplicationDatabase db = Room.databaseBuilder(getApplicationContext(), ApplicationDatabase.class, "AppDatabase").build();
-            SadrzajLogEntityDao dao = db.SadrzajLogEntityDao();
-
-            filteri.skriveniSadrzaji = dao.getSkrivenAll();
+            filteri.instanceID = mInstance;
 
             URL url = NetworkUtils.buildUrl(filteri);
 
@@ -511,7 +518,7 @@ public class MainActivity extends AppCompatActivity implements
             } catch (IOException e) {
                 e.printStackTrace();
             }finally {
-                db.close();
+
             }
             return response;
         }
@@ -537,10 +544,15 @@ public class MainActivity extends AppCompatActivity implements
 
     //region Dohvat i prikaz sadrzaja
     public void onClickOtvoriURL(View v) {
-        Button btn = (Button)v;
+        ImageView btn = (ImageView)v;
 
         Sadrzaj sadrzaj = (Sadrzaj)btn.getTag();
-        String url = NetworkUtils.buildUri(Integer.valueOf((sadrzaj.PK))).toString();
+
+        QuerySadrzaj filteri = new QuerySadrzaj();
+        filteri.sadrzajID = sadrzaj.PK;
+        filteri.instanceID = mInstance;
+
+        String url = NetworkUtils.buildUrl(filteri).toString();
 
         //Toast.makeText(this, mSadrzajData.URL, Toast.LENGTH_LONG).show();
         Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
@@ -548,7 +560,7 @@ public class MainActivity extends AppCompatActivity implements
     }
 
     public void onClickOtvoriMap(View v){
-        Button btn = (Button)v;
+        ImageView btn = (ImageView)v;
 
         Sadrzaj sadrzaj = (Sadrzaj)btn.getTag();
 
@@ -566,31 +578,44 @@ public class MainActivity extends AppCompatActivity implements
 
     //endregion
 
-    public class SpremiSkrivenTask extends AsyncTask<Parametri, Void, Boolean> {
+    public class SpremiSkrivenTask extends AsyncTask<Parametri, Void, String> {
         @Override
-        protected Boolean doInBackground(Parametri... params) {
+        protected String doInBackground(Parametri... params) {
 
             Parametri parametri = params[0];
 
-            ApplicationDatabase db = Room.databaseBuilder(getApplicationContext(), ApplicationDatabase.class, "AppDatabase").build();
-            SadrzajLogEntityDao dao = db.SadrzajLogEntityDao();
-
+            String text = "";
+            BufferedReader reader = null;
             try {
-                SadrzajLogEntity entity = new SadrzajLogEntity();
-                entity.setSadrzajPK(parametri.PK);
-                entity.setSkriven(parametri.skrivenSadrzaj);
-                entity.setPrikazanaObavijest(parametri.obavijestPrikazana);
-                dao.insertSadrzajLogEntity(entity);
+                String data = URLEncoder.encode("sadrzajID", "UTF-8") + "=" + URLEncoder.encode(String.valueOf(parametri.PK), "UTF-8");
+                data += "&" + URLEncoder.encode("instanceID", "UTF-8") + "=" + URLEncoder.encode(mInstance, "UTF-8");
 
-                db.setTransactionSuccessful();
+                URL url = NetworkUtils.buildUrlOznaciSkriven();
+                URLConnection conn = url.openConnection();
+                conn.setDoOutput(true);
 
+                OutputStreamWriter wr = new OutputStreamWriter(conn.getOutputStream());
+                wr.write( data );
+                wr.flush();
+
+                reader = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+                StringBuilder sb = new StringBuilder();
+                String line = null;
+
+                // Read Server Response
+                while((line = reader.readLine()) != null)
+                {
+                    sb.append(line + "\n");
+                }
+
+                text = sb.toString();
             } catch (Exception e) {
                 e.printStackTrace();
             } finally {
-                db.close();
+
             }
 
-            return true;
+            return text;
         }
 
         protected void onPreExecute() {
@@ -598,7 +623,7 @@ public class MainActivity extends AppCompatActivity implements
         }
 
         @Override
-        protected void onPostExecute(Boolean result) {
+        protected void onPostExecute(String result) {
 
         }
     }

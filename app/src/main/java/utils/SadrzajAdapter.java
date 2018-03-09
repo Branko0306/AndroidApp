@@ -1,6 +1,5 @@
 package utils;
 
-import android.arch.persistence.room.Room;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.support.constraint.ConstraintLayout;
@@ -10,6 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
@@ -19,9 +19,6 @@ import com.example.jelav.contentdelivery.R;
 import java.io.IOException;
 import java.net.URL;
 
-import database.ApplicationDatabase;
-import database.SadrzajLogEntity;
-import database.SadrzajLogEntityDao;
 import models.Sadrzaj;
 import models.SadrzajResponse;
 import network.NetworkUtils;
@@ -55,6 +52,7 @@ public class SadrzajAdapter extends RecyclerView.Adapter<SadrzajAdapter.SadrzajV
 
         View view = inflater.inflate(layoutIdForListItem, viewGroup, shouldAttachToParentImmediately);
         view.setFocusable(true);
+
 
         SadrzajViewHolder viewHolder = new SadrzajViewHolder(view);
         return viewHolder;
@@ -98,36 +96,44 @@ public class SadrzajAdapter extends RecyclerView.Adapter<SadrzajAdapter.SadrzajV
 
     //region SadrzajViewHolder
 
-    class SadrzajViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+    class SadrzajViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener  {
 
-        TextView listItemSadrzajView;
+        TextView listItemSadrzajNaziv;
+        TextView listItemSadrzajSkraceniOpis;
         TextView listItemSadrzajOpis;
-        Button navigateButton;
-        Button otvoriURLButton;
+        ImageView navigateButton;
+        ImageView otvoriButton;
+        ImageView expandView;
         public ImageView thumbnail;
-        public ConstraintLayout viewForeground;
+        public LinearLayout viewForeground;
 
         public SadrzajViewHolder(View itemView) {
             super(itemView);
 
-            listItemSadrzajView = (TextView) itemView.findViewById(R.id.tv_sadrzaj_item);
+            listItemSadrzajNaziv = (TextView) itemView.findViewById(R.id.tv_sadrzaj_naziv);
+            listItemSadrzajSkraceniOpis = (TextView) itemView.findViewById(R.id.tv_sadrzaj_skraceni_opis);
             listItemSadrzajOpis = (TextView) itemView.findViewById(R.id.tv_sadrzaj_opis);
-            navigateButton = (Button)itemView.findViewById(R.id.btnNavigateMap);
-            otvoriURLButton= (Button)itemView.findViewById(R.id.btnOtvoriURL);
+            navigateButton = (ImageView)itemView.findViewById(R.id.actionButtonNavigateID);
+            otvoriButton= (ImageView)itemView.findViewById(R.id.actionButtonOpenID);
+            expandView = (ImageView)itemView.findViewById(R.id.actionCollapse);
 
             thumbnail = itemView.findViewById(R.id.thumbnail);
-            viewForeground = itemView.findViewById(R.id.view_foreground);
+            viewForeground = (LinearLayout) itemView.findViewById(R.id.view_foreground);
 
             itemView.setOnClickListener(this);
+            expandView.setOnClickListener(this);
         }
 
         void bind(int listIndex) {
             Sadrzaj sadrzaj = mSadrzajResponse.data.get(listIndex);
-            listItemSadrzajView.setText(sadrzaj.Naziv);
+            listItemSadrzajNaziv.setText(sadrzaj.Naziv);
+            listItemSadrzajSkraceniOpis.setText(sadrzaj.SkraceniOpis);
             listItemSadrzajOpis.setText(sadrzaj.DugiOpis);
 
             navigateButton.setTag(sadrzaj);
-            otvoriURLButton.setTag(sadrzaj);
+            otvoriButton.setTag(sadrzaj);
+
+            listItemSadrzajOpis.setVisibility(View.GONE);
 
             Glide.with(context).load(NetworkUtils.buildUriGetPicture(sadrzaj.PK))
                     .diskCacheStrategy(DiskCacheStrategy.ALL) // Cache the original size to disk so that open will be fast
@@ -136,8 +142,6 @@ public class SadrzajAdapter extends RecyclerView.Adapter<SadrzajAdapter.SadrzajV
                     .into(thumbnail);
         }
 
-
-
         @Override
         public void onClick(View view) {
             int clickedPosition = getAdapterPosition();
@@ -145,12 +149,10 @@ public class SadrzajAdapter extends RecyclerView.Adapter<SadrzajAdapter.SadrzajV
 
             if(listItemSadrzajOpis.getVisibility() == View.GONE){
                 listItemSadrzajOpis.setVisibility(View.VISIBLE);
-                otvoriURLButton.setVisibility(View.VISIBLE);
-                navigateButton.setVisibility(View.VISIBLE);
+                expandView.setImageResource(R.drawable.ic_expand_less_black_24px);
             }else {
                 listItemSadrzajOpis.setVisibility(View.GONE);
-                otvoriURLButton.setVisibility(View.GONE);
-                navigateButton.setVisibility(View.GONE);
+                expandView.setImageResource(R.drawable.ic_expand_more_black_24px);
             }
         }
     }

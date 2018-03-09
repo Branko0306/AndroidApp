@@ -1,6 +1,5 @@
 package models;
 
-import android.arch.persistence.room.ColumnInfo;
 
 /**
  * Created by jelav on 28/12/2017.

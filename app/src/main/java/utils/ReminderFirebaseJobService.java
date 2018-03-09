@@ -22,7 +22,8 @@ public class ReminderFirebaseJobService  extends JobService {
             @Override
             protected Object doInBackground(Object[] objects) {
                 Context context = ReminderFirebaseJobService.this;
-                ReminderTasks.executeTask(context, ReminderTasks.ACTION_PRIKAZI_NOTIFIKACIJU_PODSJETNIK);
+
+                ReminderTasks.executeTask(context, ReminderTasks.ACTION_PRIKAZI_NOTIFIKACIJU_PODSJETNIK, null);
                 return null;
             }
 
