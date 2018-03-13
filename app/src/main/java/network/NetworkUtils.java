@@ -30,7 +30,7 @@ public final class NetworkUtils {
     private static final String AKCIJA_OZNACI_PRIKAZAN = "DohvatiSadrzaj/OznaciPrikazan";
 
 
-    private static final boolean IS_DEBUG = true;
+    private static final boolean IS_DEBUG = false;
 
     //primjer upita
     //http://192.168.5.107:58051/DohvatiSadrzaj/DohvatiSadrzaje?country=Croatia&town=Dubrovnik&Latitude=42.64696525910761&Longitude=18.08006286621094&Tagovi=tag1;tag2;tag1222&Kategorija=231231

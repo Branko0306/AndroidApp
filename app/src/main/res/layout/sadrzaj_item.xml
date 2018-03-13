@@ -2,6 +2,7 @@
 
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:card_view="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/view_foreground"
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
@@ -13,102 +14,94 @@
         android:layout_gravity="center"
         android:layout_margin="@dimen/card_margin"
         android:elevation="@dimen/card_elevation"
-        card_view:cardUseCompatPadding="true"
-        card_view:cardCornerRadius="@dimen/card_radius">
+        card_view:cardCornerRadius="@dimen/card_radius"
+        card_view:cardElevation="@dimen/card_elevation"
+        card_view:cardUseCompatPadding="true">
 
-        <LinearLayout
+        <android.support.constraint.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:layout_height="wrap_content">
 
             <ImageView
                 android:id="@+id/thumbnail"
-                android:layout_width="fill_parent"
+                android:layout_width="122dp"
                 android:layout_height="@dimen/cover_height"
+                android:layout_marginEnd="16dp"
+                android:layout_marginTop="16dp"
                 android:background="?attr/selectableItemBackgroundBorderless"
                 android:clickable="true"
                 android:contentDescription="@string/slika"
                 android:focusable="true"
-                android:scaleType="fitXY" />
-
-            <TextView
-                android:id="@+id/tv_sadrzaj_naziv"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:paddingStart="@dimen/sadrzaj_naziv_left_padding"
-                android:paddingEnd="@dimen/sadrzaj_naziv_right_padding"
-                android:paddingTop="@dimen/sadrzaj_naziv_top_padding"
-                android:textColor="@color/secondaryTextColor"
-                android:textSize="@dimen/sadrzaj_naziv_text_size" />
+                android:scaleType="fitXY"
+                card_view:layout_constraintEnd_toEndOf="parent"
+                card_view:layout_constraintTop_toTopOf="parent" />
 
             <TextView
                 android:id="@+id/tv_sadrzaj_skraceni_opis"
-                android:layout_width="match_parent"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:paddingStart="@dimen/sadrzaj_skraceni_opis_left_padding"
-                android:paddingEnd="@dimen/sadrzaj_skraceni_opis_right_padding"
-                android:paddingBottom="@dimen/sadrzaj_skraceni_opis_bottom_padding"
+                android:layout_marginEnd="16dp"
+                android:layout_marginStart="16dp"
                 android:textColor="@color/secondaryTextColor"
-                android:textSize="@dimen/sadrzaj_skraceni_opis_text_size" />
+                android:textSize="@dimen/sadrzaj_skraceni_opis_text_size"
+                card_view:layout_constraintEnd_toStartOf="@+id/thumbnail"
+                card_view:layout_constraintStart_toStartOf="parent"
+                card_view:layout_constraintTop_toBottomOf="@+id/tv_sadrzaj_naziv" />
 
-            <LinearLayout
-                android:id="@+id/buttonsBar"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:gravity="end">
-
-                <ImageView
-                    android:id="@+id/actionButtonNavigateID"
-                    android:layout_width="@dimen/icon_width"
-                    android:layout_height="@dimen/icon_height"
-                    android:contentDescription="@string/prikazi_put"
-                    android:clickable="true"
-                    android:focusable="true"
-                    android:onClick="onClickOtvoriMap"
-                    android:gravity="start"
-                    android:layout_margin="@dimen/icon_margin"
-                    android:src="@drawable/ic_directions_walk_black_24px" />
-
-                <ImageView
-                    android:id="@+id/actionButtonOpenID"
-                    android:layout_width="@dimen/icon_width"
-                    android:layout_height="@dimen/icon_height"
-                    android:clickable="true"
-                    android:contentDescription="@string/prikazi_u_pregledniku"
-                    android:focusable="true"
-                    android:onClick="onClickOtvoriURL"
-                    android:gravity="start"
-                    android:layout_margin="@dimen/icon_margin"
-                    android:src="@drawable/ic_open_in_browser_black_24px" />
-
-                <ImageView
-                    android:id="@+id/actionCollapse"
-                    android:layout_width="@dimen/icon_width"
-                    android:layout_height="@dimen/icon_height"
-                    android:clickable="true"
-                    android:contentDescription="@string/otvori_dodatno"
-                    android:focusable="true"
-                    android:forceHasOverlappingRendering="false"
-                    android:gravity="end"
-                    android:onClick="expandView"
-                    android:layout_margin="@dimen/icon_margin"
-                    android:src="@drawable/ic_expand_more_black_24px" />
-
-
-            </LinearLayout>
 
             <TextView
                 android:id="@+id/tv_sadrzaj_opis"
-                android:layout_width="match_parent"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:textColor="@color/secondaryTextColor"
+                android:layout_marginEnd="16dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="8dp"
                 android:paddingBottom="@dimen/sadrzaj_opis_bottom_padding"
-                android:paddingEnd="@dimen/sadrzaj_opis_right_padding"
-                android:paddingStart="@dimen/sadrzaj_opis_left_padding"
-                android:textSize="@dimen/sadrzaj_opis_text_size" />
+                android:textColor="@color/secondaryTextColor"
+                android:textSize="@dimen/sadrzaj_opis_text_size"
+                card_view:layout_constraintEnd_toEndOf="parent"
+                card_view:layout_constraintStart_toStartOf="parent"
+                card_view:layout_constraintTop_toBottomOf="@+id/actionButtonNavigateID" />
 
-        </LinearLayout>
+            <TextView
+                android:id="@+id/tv_sadrzaj_naziv"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="16dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="24dp"
+                android:textColor="@color/secondaryTextColor"
+                android:textSize="@dimen/sadrzaj_naziv_text_size"
+                card_view:layout_constraintEnd_toStartOf="@+id/thumbnail"
+                card_view:layout_constraintStart_toStartOf="parent"
+                card_view:layout_constraintTop_toTopOf="parent" />
+
+            <Button
+                android:id="@+id/actionButtonNavigateID"
+                style="@style/Widget.AppCompat.Button.Borderless.Colored"
+                android:layout_width="wrap_content"
+                android:layout_height="34dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="8dp"
+                android:onClick="onClickOtvoriMap"
+                android:text="@string/prikazi_put"
+                card_view:layout_constraintStart_toStartOf="parent"
+                card_view:layout_constraintTop_toBottomOf="@+id/tv_sadrzaj_skraceni_opis" />
+
+            <Button
+                android:id="@+id/actionButtonOpenID"
+                style="@style/Widget.AppCompat.Button.Borderless.Colored"
+                android:layout_width="wrap_content"
+                android:layout_height="34dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="8dp"
+                android:onClick="onClickOtvoriURL"
+                android:text="@string/prikazi_u_pregledniku"
+                card_view:layout_constraintStart_toEndOf="@+id/actionButtonNavigateID"
+                card_view:layout_constraintTop_toBottomOf="@+id/tv_sadrzaj_skraceni_opis" />
+
+        </android.support.constraint.ConstraintLayout>
+
 
     </android.support.v7.widget.CardView>
 

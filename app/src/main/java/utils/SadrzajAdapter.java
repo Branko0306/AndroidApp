@@ -101,9 +101,8 @@ public class SadrzajAdapter extends RecyclerView.Adapter<SadrzajAdapter.SadrzajV
         TextView listItemSadrzajNaziv;
         TextView listItemSadrzajSkraceniOpis;
         TextView listItemSadrzajOpis;
-        ImageView navigateButton;
-        ImageView otvoriButton;
-        ImageView expandView;
+        Button navigateButton;
+        Button otvoriButton;
         public ImageView thumbnail;
         public LinearLayout viewForeground;
 
@@ -113,15 +112,16 @@ public class SadrzajAdapter extends RecyclerView.Adapter<SadrzajAdapter.SadrzajV
             listItemSadrzajNaziv = (TextView) itemView.findViewById(R.id.tv_sadrzaj_naziv);
             listItemSadrzajSkraceniOpis = (TextView) itemView.findViewById(R.id.tv_sadrzaj_skraceni_opis);
             listItemSadrzajOpis = (TextView) itemView.findViewById(R.id.tv_sadrzaj_opis);
-            navigateButton = (ImageView)itemView.findViewById(R.id.actionButtonNavigateID);
-            otvoriButton= (ImageView)itemView.findViewById(R.id.actionButtonOpenID);
-            expandView = (ImageView)itemView.findViewById(R.id.actionCollapse);
+            navigateButton = (Button)itemView.findViewById(R.id.actionButtonNavigateID);
+            otvoriButton= (Button)itemView.findViewById(R.id.actionButtonOpenID);
 
             thumbnail = itemView.findViewById(R.id.thumbnail);
             viewForeground = (LinearLayout) itemView.findViewById(R.id.view_foreground);
 
             itemView.setOnClickListener(this);
-            expandView.setOnClickListener(this);
+            listItemSadrzajNaziv.setOnClickListener(this);
+            listItemSadrzajSkraceniOpis.setOnClickListener(this);
+            thumbnail.setOnClickListener(this);
         }
 
         void bind(int listIndex) {
@@ -149,10 +149,8 @@ public class SadrzajAdapter extends RecyclerView.Adapter<SadrzajAdapter.SadrzajV
 
             if(listItemSadrzajOpis.getVisibility() == View.GONE){
                 listItemSadrzajOpis.setVisibility(View.VISIBLE);
-                expandView.setImageResource(R.drawable.ic_expand_less_black_24px);
             }else {
                 listItemSadrzajOpis.setVisibility(View.GONE);
-                expandView.setImageResource(R.drawable.ic_expand_more_black_24px);
             }
         }
     }

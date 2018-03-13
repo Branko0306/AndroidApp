@@ -544,7 +544,7 @@ public class MainActivity extends AppCompatActivity implements
 
     //region Dohvat i prikaz sadrzaja
     public void onClickOtvoriURL(View v) {
-        ImageView btn = (ImageView)v;
+        Button btn = (Button)v;
 
         Sadrzaj sadrzaj = (Sadrzaj)btn.getTag();
 
@@ -560,7 +560,7 @@ public class MainActivity extends AppCompatActivity implements
     }
 
     public void onClickOtvoriMap(View v){
-        ImageView btn = (ImageView)v;
+        Button btn = (Button)v;
 
         Sadrzaj sadrzaj = (Sadrzaj)btn.getTag();
 

@@ -15,7 +15,7 @@
     <string name="slika">Slika sadržaja</string>
     <string name="actionButtonNavigate">Navigate</string>
     <string name="actionButtonOpen">Open</string>
-    <string name="prikazi_put">Prikaži put do...</string>
-    <string name="prikazi_u_pregledniku">Prikaži u pregledniku...</string>
+    <string name="prikazi_put">Navigate</string>
+    <string name="prikazi_u_pregledniku">Otvori</string>
     <string name="otvori_dodatno">Otvori sadržaj</string>
 </resources>

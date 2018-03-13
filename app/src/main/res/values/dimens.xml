@@ -2,14 +2,13 @@
 <resources>
     <dimen name="activity_horizontal_margin">16dp</dimen>
     <dimen name="activity_vertical_margin">16dp</dimen>
-    <dimen name="fab_margin">16dp</dimen>
-    <dimen name="item_offset">10dp</dimen>
     <dimen name="detail_backdrop_height">250dp</dimen>
     <dimen name="backdrop_title">30dp</dimen>
     <dimen name="backdrop_subtitle">18dp</dimen>
-    <dimen name="card_margin">2dp</dimen>
-    <dimen name="card_radius">4dp</dimen>
-    <dimen name="cover_height">150dp</dimen>
+    <dimen name="card_margin">0dp</dimen>
+    <dimen name="card_radius">2dp</dimen>
+    <dimen name="cover_height">80dp</dimen>
+    <dimen name="cover_width">80dp</dimen>
     <dimen name="sadrzaj_naziv_top_padding">24dp</dimen>
     <dimen name="sadrzaj_naziv_text_size">24sp</dimen>
     <dimen name="sadrzaj_naziv_bottom_padding">16dp</dimen>
@@ -30,5 +29,4 @@
     <dimen name="icon_height">36dp</dimen>
     <dimen name="icon_padding">2dp</dimen>
     <dimen name="icon_margin">16dp</dimen>
-    <dimen name="cover_width">267</dimen>
 </resources>

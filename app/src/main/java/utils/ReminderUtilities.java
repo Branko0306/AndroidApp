@@ -17,7 +17,7 @@ import java.util.concurrent.TimeUnit;
  */
 
 public class ReminderUtilities {
-    private static final int REMINDER_INTERVAL_MINUTES = 1;
+    private static final int REMINDER_INTERVAL_MINUTES = 20;
     private static final int REMINDER_INTERVAL_SECONDS = (int)(TimeUnit.MINUTES.toSeconds(REMINDER_INTERVAL_MINUTES));
     private static final int SYNC_FLEXTIME_SECONDS = REMINDER_INTERVAL_SECONDS;
 
@@ -34,7 +34,7 @@ public class ReminderUtilities {
                 .setTag(REMINDER_JOB_TAG)
                 .setLifetime(Lifetime.FOREVER)
                 .setRecurring(true)
-                .setTrigger(Trigger.executionWindow(0, 5))
+                .setTrigger(Trigger.executionWindow(10, REMINDER_INTERVAL_SECONDS))
                 .setReplaceCurrent(true)
                 .build();
 
