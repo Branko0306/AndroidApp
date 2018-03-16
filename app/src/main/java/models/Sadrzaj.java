@@ -29,4 +29,7 @@ public class Sadrzaj {
     public Integer SatiDo;
     public Integer MinuteOd;
     public Integer MinuteDo;
+
+    public Integer FirmaPK;
+    public String FirmaNaziv;
 }

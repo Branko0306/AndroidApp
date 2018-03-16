@@ -150,21 +150,7 @@ public class MainActivity extends AppCompatActivity implements
         final Sadrzaj deletedItem = mAdapter.getItem(viewHolder.getAdapterPosition());
         final int deletedIndex = viewHolder.getAdapterPosition();
 
-        if(direction == ItemTouchHelper.LEFT) {
-
-            mAdapter.removeItem(viewHolder.getAdapterPosition());
-
-            Snackbar snackbar = Snackbar.make(coordinatorLayout, "Ne želite primati obavijesti za kategoriju", Snackbar.LENGTH_LONG);
-            snackbar.setAction("PONIŠTI", new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    mAdapter.restoreItem(deletedItem, deletedIndex);
-                }
-            });
-            snackbar.setActionTextColor(Color.YELLOW);
-            snackbar.show();
-        }
-        else if(direction == ItemTouchHelper.RIGHT){
+        if(direction == ItemTouchHelper.RIGHT || direction == ItemTouchHelper.LEFT){
             Sadrzaj sadrzaj = mAdapter.getItem(viewHolder.getAdapterPosition());
             mAdapter.removeItem(viewHolder.getAdapterPosition());
 
@@ -440,8 +426,8 @@ public class MainActivity extends AppCompatActivity implements
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.sadrzaj, menu);
+        //MenuInflater inflater = getMenuInflater();
+        //inflater.inflate(R.menu.sadrzaj, menu);
         return true;
     }
 
@@ -574,6 +560,11 @@ public class MainActivity extends AppCompatActivity implements
         if (intent.resolveActivity(getPackageManager()) != null) {
             startActivity(intent);
         }
+    }
+
+    public void onOpenMapActivity(View view) {
+        Intent intent = new Intent(this, MapsActivity.class);
+        startActivity(intent);
     }
 
     //endregion

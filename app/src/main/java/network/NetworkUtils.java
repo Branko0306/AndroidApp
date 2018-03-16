@@ -23,6 +23,7 @@ public final class NetworkUtils {
 
     private static final String AKCIJA_DOHVATI_SADRZAJ = "DohvatiSadrzaj";
     private static final String AKCIJA_DOHVATI_SADRZAJ_PICTURE = "Sadrzaj/GetPicture";
+    private static final String AKCIJA_DOHVATI_FIRMA_LOGO = "Firma/GetLogo";
     private static final String AKCIJA_DOHVATI_SADRZAJE = "DohvatiSadrzaj/DohvatiSadrzaje";
     private static final String AKCIJA_DOHVAT_OBAVIJEST = "DohvatiSadrzaj/DohvatiObavijest";
 
@@ -39,6 +40,7 @@ public final class NetworkUtils {
     final static String ID_PARAM = "sadrzajID";
     final static String INSTANCE_ID = "instanceID";
     final static String ID_SADRZAJ_PICTURE = "id";
+    final static String ID_FIRMA_LOGO = "id";
 
     public static URL buildUrl(QuerySadrzaji filteri){
         Uri builtUri = null;
@@ -110,6 +112,15 @@ public final class NetworkUtils {
         // COMPLETED (1) Fix this method to return the URL used to query Open Weather Map's API
         Uri builtUri = Uri.parse(getBaseURL(AKCIJA_DOHVATI_SADRZAJ_PICTURE)).buildUpon()
                 .appendQueryParameter(ID_SADRZAJ_PICTURE, (Integer.toString((sadrzajID))))
+                .build();
+
+        return builtUri;
+    }
+
+    public static Uri buildUriGetLogo(int firmaID) {
+        // COMPLETED (1) Fix this method to return the URL used to query Open Weather Map's API
+        Uri builtUri = Uri.parse(getBaseURL(AKCIJA_DOHVATI_FIRMA_LOGO)).buildUpon()
+                .appendQueryParameter(ID_FIRMA_LOGO, (Integer.toString((firmaID))))
                 .build();
 
         return builtUri;

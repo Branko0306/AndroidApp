@@ -1,10 +1,11 @@
 package utils;
 
 import android.content.Context;
-import android.os.AsyncTask;
-import android.support.constraint.ConstraintLayout;
+import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -15,9 +16,6 @@ import android.widget.TextView;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.example.jelav.contentdelivery.R;
-
-import java.io.IOException;
-import java.net.URL;
 
 import models.Sadrzaj;
 import models.SadrzajResponse;
@@ -53,14 +51,42 @@ public class SadrzajAdapter extends RecyclerView.Adapter<SadrzajAdapter.SadrzajV
         View view = inflater.inflate(layoutIdForListItem, viewGroup, shouldAttachToParentImmediately);
         view.setFocusable(true);
 
-
         SadrzajViewHolder viewHolder = new SadrzajViewHolder(view);
         return viewHolder;
     }
 
     @Override
-    public void onBindViewHolder(SadrzajViewHolder holder, int position) {
+    public void onBindViewHolder(final SadrzajViewHolder holder, int position) {
         holder.bind(position);
+    }
+
+    private void showPopupMenu(View view) {
+        // inflate menu
+        PopupMenu popup = new PopupMenu(context, view);
+        MenuInflater inflater = popup.getMenuInflater();
+        inflater.inflate(R.menu.sadrzaj, popup.getMenu());
+        popup.setOnMenuItemClickListener(new MyMenuItemClickListener());
+        popup.show();
+    }
+
+    class MyMenuItemClickListener implements PopupMenu.OnMenuItemClickListener {
+
+        public MyMenuItemClickListener() {
+        }
+
+        @Override
+        public boolean onMenuItemClick(MenuItem menuItem) {
+            switch (menuItem.getItemId()) {
+                case R.id.actionNavigate:
+
+                    return true;
+                case R.id.actionOpen:
+
+                    return true;
+                default:
+            }
+            return false;
+        }
     }
 
     @Override
@@ -101,9 +127,14 @@ public class SadrzajAdapter extends RecyclerView.Adapter<SadrzajAdapter.SadrzajV
         TextView listItemSadrzajNaziv;
         TextView listItemSadrzajSkraceniOpis;
         TextView listItemSadrzajOpis;
+        TextView firmaInfo;
+
         Button navigateButton;
         Button otvoriButton;
+
         public ImageView thumbnail;
+        public ImageView firmaLogo;
+
         public LinearLayout viewForeground;
 
         public SadrzajViewHolder(View itemView) {
@@ -116,6 +147,9 @@ public class SadrzajAdapter extends RecyclerView.Adapter<SadrzajAdapter.SadrzajV
             otvoriButton= (Button)itemView.findViewById(R.id.actionButtonOpenID);
 
             thumbnail = itemView.findViewById(R.id.thumbnail);
+            firmaLogo = itemView.findViewById(R.id.firmaLogo);
+            firmaInfo = itemView.findViewById(R.id.firmaInfo);
+
             viewForeground = (LinearLayout) itemView.findViewById(R.id.view_foreground);
 
             itemView.setOnClickListener(this);
@@ -130,6 +164,14 @@ public class SadrzajAdapter extends RecyclerView.Adapter<SadrzajAdapter.SadrzajV
             listItemSadrzajSkraceniOpis.setText(sadrzaj.SkraceniOpis);
             listItemSadrzajOpis.setText(sadrzaj.DugiOpis);
 
+            String info = "";
+            if(sadrzaj.SatiOd != sadrzaj.SatiDo)
+                info = String.format("%s %s m  od %d:%d do %d:%d", sadrzaj.FirmaNaziv, sadrzaj.Udaljenost, sadrzaj.SatiOd, sadrzaj.MinuteOd, sadrzaj.SatiDo, sadrzaj.MinuteDo);
+            else
+                info = String.format("%s %s m", sadrzaj.FirmaNaziv, sadrzaj.Udaljenost);
+
+            firmaInfo.setText(info);
+
             navigateButton.setTag(sadrzaj);
             otvoriButton.setTag(sadrzaj);
 
@@ -140,6 +182,12 @@ public class SadrzajAdapter extends RecyclerView.Adapter<SadrzajAdapter.SadrzajV
                     .skipMemoryCache(true)  // Cache everything
                     .fitCenter() // scale to fit entire image within ImageView
                     .into(thumbnail);
+
+            Glide.with(context).load(NetworkUtils.buildUriGetLogo(sadrzaj.FirmaPK))
+                    .diskCacheStrategy(DiskCacheStrategy.ALL) // Cache the original size to disk so that open will be fast
+                    .skipMemoryCache(true)  // Cache everything
+                    .fitCenter() // scale to fit entire image within ImageView
+                    .into(firmaLogo);
         }
 
         @Override
