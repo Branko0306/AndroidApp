@@ -53,8 +53,9 @@
         android:onClick="onOpenMapActivity"
         android:src="@drawable/ic_place_black_24px"
         app:backgroundTint="@color/colorAccent"
-        app:layout_anchor="@id/rv_sadrzaj"
         app:layout_anchorGravity="bottom|right|end"
         app:rippleColor="@color/secondaryTextColor" />
 
 </android.support.design.widget.CoordinatorLayout>
+
+

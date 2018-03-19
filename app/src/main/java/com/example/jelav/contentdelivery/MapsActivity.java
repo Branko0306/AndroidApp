@@ -2,6 +2,7 @@ package com.example.jelav.contentdelivery;
 
 import android.Manifest;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.AsyncTask;
@@ -9,6 +10,7 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 
 import com.google.android.gms.iid.InstanceID;
@@ -29,7 +31,7 @@ import network.NetworkUtils;
 import network.QuerySadrzaji;
 import utils.SadrzajWrapper;
 
-public class MapsActivity extends FragmentActivity implements OnMapReadyCallback, GoogleMap.OnCameraMoveStartedListener, GoogleMap.OnCameraMoveListener, GoogleMap.OnCameraIdleListener {
+public class MapsActivity extends AppCompatActivity implements OnMapReadyCallback, GoogleMap.OnCameraMoveStartedListener, GoogleMap.OnCameraMoveListener, GoogleMap.OnCameraIdleListener {
 
 
     private GoogleMap mMap;
@@ -97,6 +99,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     }
 
+    public void onOpenListActivity(View view){
+        Intent intent = new Intent(this, MainActivity.class);
+        startActivity(intent);
+    }
+
     @Override
     public void onCameraIdle() {
         odradiDohvatSadrzaja();
@@ -135,6 +142,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         protected void onPostExecute(SadrzajResponse result) {
 
             mMap.clear();
+
+            if(result == null || result.data == null)
+                return;
+
             for ( Sadrzaj sadrzaj: result.data) {
                 LatLng location = new LatLng(sadrzaj.LokacijaLatitude, sadrzaj.LokacijaLongitude);
                 mMap.addMarker(new MarkerOptions().position(location).title(sadrzaj.Naziv));
