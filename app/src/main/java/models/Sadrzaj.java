@@ -32,4 +32,6 @@ public class Sadrzaj {
 
     public Integer FirmaPK;
     public String FirmaNaziv;
+
+    public String PDF;
 }

@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">ContentDelivery</string>
+    <string name="app_name">Aplikacija</string>
     <string name="error_message">Dogodila se greška prilikom dohvata podataka</string>
     <string name="otvori">Otvori</string>
     <string name="notification_name">Notification name</string>
@@ -19,4 +19,6 @@
     <string name="prikazi_u_pregledniku">Otvori</string>
     <string name="otvori_dodatno">Otvori sadržaj</string>
     <string name="title_activity_maps">Map</string>
+    <string name="rijec_ponisti">Poništi</string>
+    <string name="uklonjen_sadrzaj">Sadržaj je uklonjen i neće se prikazivati.</string>
 </resources>

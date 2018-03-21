@@ -100,8 +100,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     }
 
     public void onOpenListActivity(View view){
-        Intent intent = new Intent(this, MainActivity.class);
-        startActivity(intent);
+        finish();
     }
 
     @Override
@@ -112,6 +111,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     public void onMapRefreshArea(View view){
         odradiDohvatSadrzaja();
     }
+
     public class SadrzajDohvatTask extends AsyncTask<QuerySadrzaji, Void, SadrzajResponse> {
         @Override
         protected SadrzajResponse doInBackground(QuerySadrzaji... filters) {
@@ -119,7 +119,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
             filteri.instanceID = mInstance;
 
-            URL url = NetworkUtils.buildUrl(filteri);
+            URL url = NetworkUtils.buildUrlMap(filteri);
 
             String result = null;
             SadrzajResponse response = null;

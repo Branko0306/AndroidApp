@@ -25,6 +25,8 @@ public final class NetworkUtils {
     private static final String AKCIJA_DOHVATI_SADRZAJ_PICTURE = "Sadrzaj/GetPicture";
     private static final String AKCIJA_DOHVATI_FIRMA_LOGO = "Firma/GetLogo";
     private static final String AKCIJA_DOHVATI_SADRZAJE = "DohvatiSadrzaj/DohvatiSadrzaje";
+    private static final String AKCIJA_DOHVATI_SADRZAJE_MAP = "DohvatiSadrzaj/DohvatiSadrzajeMap";
+
     private static final String AKCIJA_DOHVAT_OBAVIJEST = "DohvatiSadrzaj/DohvatiObavijest";
 
     private static final String AKCIJA_OZNACI_SKRIVEN = "DohvatiSadrzaj/OznaciSkriven";
@@ -46,6 +48,25 @@ public final class NetworkUtils {
         Uri builtUri = null;
 
         builtUri = Uri.parse(getBaseURL(AKCIJA_DOHVATI_SADRZAJE)).buildUpon()
+                .appendQueryParameter(LAT_PARAM, (Double.toString((filteri.Latitude))))
+                .appendQueryParameter(LON_PARAM, (Double.toString((filteri.Longitude))))
+                .appendQueryParameter(INSTANCE_ID, filteri.instanceID)
+                .build();
+
+        URL url = null;
+        try {
+            url = new URL(builtUri.toString());
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        }
+
+        return url;
+    }
+
+    public static URL buildUrlMap(QuerySadrzaji filteri){
+        Uri builtUri = null;
+
+        builtUri = Uri.parse(getBaseURL(AKCIJA_DOHVATI_SADRZAJE_MAP)).buildUpon()
                 .appendQueryParameter(LAT_PARAM, (Double.toString((filteri.Latitude))))
                 .appendQueryParameter(LON_PARAM, (Double.toString((filteri.Longitude))))
                 .appendQueryParameter(INSTANCE_ID, filteri.instanceID)

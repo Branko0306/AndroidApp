@@ -2,6 +2,8 @@ package com.example.jelav.contentdelivery;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.app.ProgressDialog;
+import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -13,11 +15,13 @@ import android.location.Location;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.annotation.NonNull;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.content.FileProvider;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -48,9 +52,15 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 
 import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLEncoder;
@@ -106,6 +116,7 @@ public class MainActivity extends AppCompatActivity implements
     private SwipeRefreshLayout swipeContainer;
     private CoordinatorLayout coordinatorLayout;
     private String mInstance;
+    private ProgressDialog pDialog;
 
 
     @Override
@@ -141,6 +152,10 @@ public class MainActivity extends AppCompatActivity implements
         mInstance = instanceID.getId();
 
         ReminderUtilities.scheduleChargingReminder(this);
+
+        pDialog = new ProgressDialog(this);
+        pDialog.setMessage("Molim pričekajte...");
+        pDialog.setCancelable(false);
     }
 
     //region SwipeRefreshLayout
@@ -162,8 +177,8 @@ public class MainActivity extends AppCompatActivity implements
                 new SpremiSkrivenTask().execute(params);
             }
 
-            Snackbar snackbar = Snackbar.make(coordinatorLayout, "Uklonili ste sadržaj", Snackbar.LENGTH_LONG);
-            snackbar.setAction("PONIŠTI", new View.OnClickListener() {
+            Snackbar snackbar = Snackbar.make(coordinatorLayout, getString(R.string.uklonjen_sadrzaj), Snackbar.LENGTH_LONG);
+            snackbar.setAction(getString(R.string.rijec_ponisti), new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     mAdapter.restoreItem(deletedItem, deletedIndex);
@@ -198,8 +213,10 @@ public class MainActivity extends AppCompatActivity implements
                 swipeContainer.setRefreshing(false);
             }
         });
+
         // Configure the refreshing colors
-        swipeContainer.setColorSchemeResources(android.R.color.holo_blue_bright,
+        swipeContainer.setColorSchemeResources(
+                android.R.color.holo_blue_bright,
                 android.R.color.holo_green_light,
                 android.R.color.holo_orange_light,
                 android.R.color.holo_red_light);
@@ -540,9 +557,29 @@ public class MainActivity extends AppCompatActivity implements
 
         String url = NetworkUtils.buildUrl(filteri).toString();
 
-        //Toast.makeText(this, mSadrzajData.URL, Toast.LENGTH_LONG).show();
-        Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
-        startActivity(browserIntent);
+        if(sadrzaj.PDF != ""){
+            new DownloadFile().execute(url, sadrzaj.PDF, this.getFilesDir().toString());
+        }else{
+            Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+            startActivity(browserIntent);
+        }
+    }
+
+    public void viewPDF(String file){
+        File pdfFile = new File(file);
+        Intent pdfIntent = new Intent(Intent.ACTION_VIEW);
+
+        Uri pdfURI = FileProvider.getUriForFile(MainActivity.this, BuildConfig.APPLICATION_ID + ".provider", pdfFile);
+
+        pdfIntent.setDataAndType(pdfURI, "application/pdf");
+        pdfIntent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+
+        Intent intent = Intent.createChooser(pdfIntent, "Open File");
+        try{
+            startActivity(intent);
+        }catch(ActivityNotFoundException e){
+            showToast("No Application available to view PDF");
+        }
     }
 
     public void onClickOtvoriMap(View v){
@@ -568,6 +605,86 @@ public class MainActivity extends AppCompatActivity implements
     }
 
     //endregion
+
+
+    private class DownloadFile extends AsyncTask<String, Void, String>{
+
+        @Override
+        protected String doInBackground(String... strings) {
+            String fileUrl = strings[0];   // -> http://maven.apache.org/maven-1.x/maven.pdf
+            String fileName = strings[1];  // -> maven.pdf
+            String extStorageDirectory = strings[2];
+            File folder = new File(extStorageDirectory);
+            folder.mkdir();
+
+            File pdfFile = new File(folder, fileName);
+
+            try{
+                pdfFile.createNewFile();
+            }catch (IOException e){
+                e.printStackTrace();
+            }
+            new FileDownloader().downloadFile(fileUrl, pdfFile);
+            return pdfFile.getPath();
+        }
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            showpDialog();
+        }
+
+        @Override
+        protected void onPostExecute(String path) {
+
+            hidepDialog();
+            viewPDF(path);
+        }
+    }
+
+
+    public class FileDownloader {
+        private static final int  MEGABYTE = 1024 * 1024;
+
+        public void downloadFile(String fileUrl, File directory){
+            try {
+
+                URL url = new URL(fileUrl);
+                HttpURLConnection urlConnection = (HttpURLConnection)url.openConnection();
+                urlConnection.setRequestMethod("GET");
+                urlConnection.setDoOutput(true);
+                urlConnection.connect();
+
+                InputStream inputStream = urlConnection.getInputStream();
+                FileOutputStream fileOutputStream = new FileOutputStream(directory);
+                int totalSize = urlConnection.getContentLength();
+
+                byte[] buffer = new byte[MEGABYTE];
+                int bufferLength = 0;
+                while((bufferLength = inputStream.read(buffer))>0 ){
+                    fileOutputStream.write(buffer, 0, bufferLength);
+                }
+                fileOutputStream.close();
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            } catch (MalformedURLException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+    }
+
+    private void showpDialog() {
+        if (!pDialog.isShowing())
+            pDialog.show();
+    }
+
+    private void hidepDialog() {
+        if (pDialog.isShowing())
+            pDialog.dismiss();
+    }
 
     public class SpremiSkrivenTask extends AsyncTask<Parametri, Void, String> {
         @Override
