@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Aplikacija</string>
+    <string name="app_name">HIT ME</string>
     <string name="error_message">Dogodila se greška prilikom dohvata podataka</string>
     <string name="otvori">Otvori</string>
     <string name="notification_name">Notification name</string>
@@ -13,12 +13,12 @@
     <string name="backdrop_title">LOVE MUSIC</string>
     <string name="backdrop_subtitle">This season top 20 albums</string>
     <string name="slika">Slika sadržaja</string>
-    <string name="actionButtonNavigate">Navigate</string>
-    <string name="actionButtonOpen">Open</string>
-    <string name="prikazi_put">Navigate</string>
-    <string name="prikazi_u_pregledniku">Otvori</string>
-    <string name="otvori_dodatno">Otvori sadržaj</string>
-    <string name="title_activity_maps">Map</string>
+    <string name="actionButtonNavigate">Navigacija</string>
+    <string name="actionButtonOpen">Prikaži</string>
+    <string name="prikazi_put">Navigacija</string>
+    <string name="prikazi_u_pregledniku">Prikaži</string>
+    <string name="otvori_dodatno">Prikaži</string>
+    <string name="title_activity_maps">Mapa</string>
     <string name="rijec_ponisti">Poništi</string>
-    <string name="uklonjen_sadrzaj">Sadržaj je uklonjen i neće se prikazivati.</string>
+    <string name="uklonjen_sadrzaj">Sadržaj će se ukloniti i neće se prikazivati.</string>
 </resources>

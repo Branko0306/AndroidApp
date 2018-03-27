@@ -139,6 +139,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             return;
 
         QuerySadrzaji filters = new QuerySadrzaji();
+        filters.Zoom = mMap.getCameraPosition().zoom;
         filters.Longitude = mMap.getCameraPosition().target.longitude;
         filters.Latitude = mMap.getCameraPosition().target.latitude;
         filters.instanceID = mInstance;

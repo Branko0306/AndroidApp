@@ -43,6 +43,7 @@ public final class NetworkUtils {
     final static String INSTANCE_ID = "instanceID";
     final static String ID_SADRZAJ_PICTURE = "id";
     final static String ID_FIRMA_LOGO = "id";
+    final static String ZOOM_PARAM = "zoom";
 
     public static URL buildUrl(QuerySadrzaji filteri){
         Uri builtUri = null;
@@ -69,6 +70,7 @@ public final class NetworkUtils {
         builtUri = Uri.parse(getBaseURL(AKCIJA_DOHVATI_SADRZAJE_MAP)).buildUpon()
                 .appendQueryParameter(LAT_PARAM, (Double.toString((filteri.Latitude))))
                 .appendQueryParameter(LON_PARAM, (Double.toString((filteri.Longitude))))
+                .appendQueryParameter(ZOOM_PARAM, (Double.toString((filteri.Zoom))))
                 .appendQueryParameter(INSTANCE_ID, filteri.instanceID)
                 .build();
 

@@ -330,8 +330,8 @@ public class MainActivity extends AppCompatActivity implements
     @SuppressLint("RestrictedApi")
     protected void createLocationRequest() {
         mLocationRequest = new LocationRequest();
-        mLocationRequest.setInterval(100000);
-        mLocationRequest.setFastestInterval(50000);
+        mLocationRequest.setInterval(30000);
+        mLocationRequest.setFastestInterval(10000);
         mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
 
         LocationSettingsRequest.Builder builder = new LocationSettingsRequest.Builder().addLocationRequest(mLocationRequest);
@@ -601,6 +601,7 @@ public class MainActivity extends AppCompatActivity implements
             try {
                 String data = URLEncoder.encode("sadrzajID", "UTF-8") + "=" + URLEncoder.encode(String.valueOf(parametri.PK), "UTF-8");
                 data += "&" + URLEncoder.encode("instanceID", "UTF-8") + "=" + URLEncoder.encode(mInstance, "UTF-8");
+                data += "&" + URLEncoder.encode("skriven", "UTF-8") + "=" + URLEncoder.encode(String.valueOf(parametri.skrivenSadrzaj), "UTF-8");
 
                 URL url = NetworkUtils.buildUrlOznaciSkriven();
                 URLConnection conn = url.openConnection();
