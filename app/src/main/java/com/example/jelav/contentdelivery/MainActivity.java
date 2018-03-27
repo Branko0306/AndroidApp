@@ -75,14 +75,16 @@ import network.PostSadrzajSkriven;
 import network.QueryFilters;
 import network.QuerySadrzaj;
 import network.QuerySadrzaji;
+import utils.AkcijeUtils;
 import utils.NotificationUtils;
 import utils.RecyclerItemTouchHelper;
 import utils.ReminderUtilities;
 import utils.SadrzajAdapter;
 import utils.SadrzajWrapper;
+import utils.ShowDialog;
 
 public class MainActivity extends AppCompatActivity implements
-        RecyclerItemTouchHelper.RecyclerItemTouchHelperListener {
+        RecyclerItemTouchHelper.RecyclerItemTouchHelperListener, ShowDialog {
 
     //region Static final memberi
 
@@ -325,6 +327,7 @@ public class MainActivity extends AppCompatActivity implements
         }
     }
 
+    @SuppressLint("RestrictedApi")
     protected void createLocationRequest() {
         mLocationRequest = new LocationRequest();
         mLocationRequest.setInterval(100000);
@@ -504,6 +507,18 @@ public class MainActivity extends AppCompatActivity implements
         new SadrzajDohvatTask().execute(filters);
     }
 
+    @Override
+    public void ShowDialog() {
+        if (!pDialog.isShowing())
+            pDialog.show();
+    }
+
+    @Override
+    public void HideDialog() {
+        if (pDialog.isShowing())
+            pDialog.dismiss();
+    }
+
     public class SadrzajDohvatTask extends AsyncTask<QuerySadrzaji, Void, SadrzajResponse> {
         @Override
         protected SadrzajResponse doInBackground(QuerySadrzaji... filters) {
@@ -551,35 +566,8 @@ public class MainActivity extends AppCompatActivity implements
 
         Sadrzaj sadrzaj = (Sadrzaj)btn.getTag();
 
-        QuerySadrzaj filteri = new QuerySadrzaj();
-        filteri.sadrzajID = sadrzaj.PK;
-        filteri.instanceID = mInstance;
-
-        String url = NetworkUtils.buildUrl(filteri).toString();
-
-        if(sadrzaj.PDF != ""){
-            new DownloadFile().execute(url, sadrzaj.PDF, this.getFilesDir().toString());
-        }else{
-            Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
-            startActivity(browserIntent);
-        }
-    }
-
-    public void viewPDF(String file){
-        File pdfFile = new File(file);
-        Intent pdfIntent = new Intent(Intent.ACTION_VIEW);
-
-        Uri pdfURI = FileProvider.getUriForFile(MainActivity.this, BuildConfig.APPLICATION_ID + ".provider", pdfFile);
-
-        pdfIntent.setDataAndType(pdfURI, "application/pdf");
-        pdfIntent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-
-        Intent intent = Intent.createChooser(pdfIntent, "Open File");
-        try{
-            startActivity(intent);
-        }catch(ActivityNotFoundException e){
-            showToast("No Application available to view PDF");
-        }
+        AkcijeUtils utils = new AkcijeUtils(this);
+        utils.OtvoriUrl(sadrzaj, mInstance);
     }
 
     public void onClickOtvoriMap(View v){
@@ -587,104 +575,20 @@ public class MainActivity extends AppCompatActivity implements
 
         Sadrzaj sadrzaj = (Sadrzaj)btn.getTag();
 
-        Uri uri2 = Uri.parse(String.format(Locale.ENGLISH, "google.navigation:q=%f,%f&mode=w", sadrzaj.LokacijaLatitude, sadrzaj.LokacijaLongitude));
-        showMap(uri2);
-    }
-
-    public void showMap(Uri geoLocation) {
-        Intent intent = new Intent(Intent.ACTION_VIEW);
-        intent.setData(geoLocation);
-        if (intent.resolveActivity(getPackageManager()) != null) {
-            startActivity(intent);
-        }
+        AkcijeUtils utils = new AkcijeUtils(this);
+        utils.OtvoriMapu(sadrzaj);
     }
 
     public void onOpenMapActivity(View view) {
         Intent intent = new Intent(this, MapsActivity.class);
         startActivity(intent);
     }
-
     //endregion
 
 
-    private class DownloadFile extends AsyncTask<String, Void, String>{
-
-        @Override
-        protected String doInBackground(String... strings) {
-            String fileUrl = strings[0];   // -> http://maven.apache.org/maven-1.x/maven.pdf
-            String fileName = strings[1];  // -> maven.pdf
-            String extStorageDirectory = strings[2];
-            File folder = new File(extStorageDirectory);
-            folder.mkdir();
-
-            File pdfFile = new File(folder, fileName);
-
-            try{
-                pdfFile.createNewFile();
-            }catch (IOException e){
-                e.printStackTrace();
-            }
-            new FileDownloader().downloadFile(fileUrl, pdfFile);
-            return pdfFile.getPath();
-        }
-
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-            showpDialog();
-        }
-
-        @Override
-        protected void onPostExecute(String path) {
-
-            hidepDialog();
-            viewPDF(path);
-        }
-    }
 
 
-    public class FileDownloader {
-        private static final int  MEGABYTE = 1024 * 1024;
 
-        public void downloadFile(String fileUrl, File directory){
-            try {
-
-                URL url = new URL(fileUrl);
-                HttpURLConnection urlConnection = (HttpURLConnection)url.openConnection();
-                urlConnection.setRequestMethod("GET");
-                urlConnection.setDoOutput(true);
-                urlConnection.connect();
-
-                InputStream inputStream = urlConnection.getInputStream();
-                FileOutputStream fileOutputStream = new FileOutputStream(directory);
-                int totalSize = urlConnection.getContentLength();
-
-                byte[] buffer = new byte[MEGABYTE];
-                int bufferLength = 0;
-                while((bufferLength = inputStream.read(buffer))>0 ){
-                    fileOutputStream.write(buffer, 0, bufferLength);
-                }
-                fileOutputStream.close();
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
-            } catch (MalformedURLException e) {
-                e.printStackTrace();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-
-    }
-
-    private void showpDialog() {
-        if (!pDialog.isShowing())
-            pDialog.show();
-    }
-
-    private void hidepDialog() {
-        if (pDialog.isShowing())
-            pDialog.dismiss();
-    }
 
     public class SpremiSkrivenTask extends AsyncTask<Parametri, Void, String> {
         @Override

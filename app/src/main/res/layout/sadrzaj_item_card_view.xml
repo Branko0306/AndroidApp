@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v7.widget.CardView android:id="@+id/card_view"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_gravity="center"
+    android:layout_margin="@dimen/card_margin"
+    android:elevation="@dimen/card_elevation"
+    card_view:cardCornerRadius="@dimen/card_radius"
+    card_view:cardElevation="@dimen/card_elevation"
+    card_view:cardUseCompatPadding="true"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:card_view="http://schemas.android.com/apk/res-auto">
+
+    <android.support.constraint.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <ImageView
+            android:id="@+id/thumbnail"
+            android:layout_width="122dp"
+            android:layout_height="@dimen/cover_height"
+            android:layout_marginEnd="16dp"
+            android:layout_marginTop="8dp"
+            android:clickable="true"
+            android:contentDescription="@string/slika"
+            android:focusable="true"
+            android:scaleType="fitXY"
+            card_view:layout_constraintEnd_toEndOf="parent"
+            card_view:layout_constraintTop_toBottomOf="@+id/firmaInfo" />
+
+        <TextView
+            android:id="@+id/tv_sadrzaj_skraceni_opis"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="16dp"
+            android:layout_marginStart="16dp"
+            android:textColor="@color/secondaryTextColor"
+            android:textSize="@dimen/sadrzaj_skraceni_opis_text_size"
+            card_view:layout_constraintEnd_toStartOf="@+id/thumbnail"
+            card_view:layout_constraintHorizontal_bias="0.0"
+            card_view:layout_constraintStart_toStartOf="parent"
+            card_view:layout_constraintTop_toBottomOf="@+id/tv_sadrzaj_naziv" />
+
+
+        <TextView
+            android:id="@+id/tv_sadrzaj_opis"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="16dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="8dp"
+            android:paddingBottom="@dimen/sadrzaj_opis_bottom_padding"
+            android:textColor="@color/secondaryTextColor"
+            android:textSize="@dimen/sadrzaj_opis_text_size"
+            card_view:layout_constraintEnd_toEndOf="parent"
+            card_view:layout_constraintHorizontal_bias="0.0"
+            card_view:layout_constraintStart_toStartOf="parent"
+            card_view:layout_constraintTop_toBottomOf="@+id/actionButtonNavigateID" />
+
+        <TextView
+            android:id="@+id/tv_sadrzaj_naziv"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="16dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="16dp"
+            android:textColor="@color/secondaryTextColor"
+            android:textSize="@dimen/sadrzaj_naziv_text_size"
+            card_view:layout_constraintEnd_toStartOf="@+id/thumbnail"
+            card_view:layout_constraintHorizontal_bias="0.0"
+            card_view:layout_constraintStart_toStartOf="parent"
+            card_view:layout_constraintTop_toBottomOf="@+id/firmaInfo" />
+
+        <Button
+            android:id="@+id/actionButtonNavigateID"
+            style="@style/Widget.AppCompat.Button.Borderless.Colored"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="8dp"
+            android:onClick="onClickOtvoriMap"
+            android:text="@string/prikazi_put"
+            card_view:layout_constraintStart_toStartOf="parent"
+            card_view:layout_constraintTop_toBottomOf="@+id/tv_sadrzaj_skraceni_opis" />
+
+        <Button
+            android:id="@+id/actionButtonOpenID"
+            style="@style/Widget.AppCompat.Button.Borderless.Colored"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            android:onClick="onClickOtvoriURL"
+            android:text="@string/prikazi_u_pregledniku"
+            card_view:layout_constraintStart_toEndOf="@+id/actionButtonNavigateID"
+            card_view:layout_constraintTop_toBottomOf="@+id/tv_sadrzaj_skraceni_opis" />
+
+        <ImageView
+            android:id="@+id/firmaLogo"
+            android:layout_width="49dp"
+            android:layout_height="24dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="8dp"
+            card_view:layout_constraintStart_toStartOf="parent"
+            card_view:layout_constraintTop_toTopOf="parent"
+            card_view:srcCompat="@color/cardview_dark_background" />
+
+        <TextView
+            android:id="@+id/firmaInfo"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="10dp"
+            android:elegantTextHeight="true"
+            android:textAlignment="textStart"
+            android:textStyle="italic"
+            card_view:layout_constraintEnd_toEndOf="parent"
+            card_view:layout_constraintStart_toEndOf="@+id/firmaLogo"
+            card_view:layout_constraintTop_toTopOf="parent" />
+
+    </android.support.constraint.ConstraintLayout>
+
+
+</android.support.v7.widget.CardView>
