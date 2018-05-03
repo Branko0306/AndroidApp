@@ -23,6 +23,7 @@
             android:layout_marginTop="8dp"
             android:clickable="true"
             android:contentDescription="@string/slika"
+            android:elevation="@dimen/sadrzaj_img_elevation"
             android:focusable="true"
             android:scaleType="fitXY"
             card_view:layout_constraintEnd_toEndOf="parent"

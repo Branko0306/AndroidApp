@@ -29,4 +29,5 @@
     <dimen name="icon_height">36dp</dimen>
     <dimen name="icon_padding">2dp</dimen>
     <dimen name="icon_margin">16dp</dimen>
+    <dimen name="sadrzaj_img_elevation">4dp</dimen>
 </resources>
